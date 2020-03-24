@@ -20,8 +20,8 @@ trait AliSmsTrait
 
     /**
      * 发送验证码
-     * @param $mobile 手机号码
-     * @param $scene 业务场景
+     * @param integer $mobile 手机号码
+     * @param string $scene 业务场景
      * @param array $data 数据 array('key1'=>'value1','key2'=>'value2', …… )
      * @return bool
      * @throws \Exception

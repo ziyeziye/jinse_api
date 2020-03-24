@@ -19,8 +19,10 @@ Route::group(['prefix' => '/api'], function () {
     Route::post('/login/sms', 'ApiAuthController@login_sms');
     Route::post('/login', 'ApiAuthController@login');
 
-    Route::group(['middleware' => ['auth.user']], function () {
-        Route::get('/user/logout', 'UserController@logout');
+    Route::group(['middleware' => ['api.user']], function () {
+        Route::get('/user', 'ApiAuthController@user');
+        Route::get('/logout', 'ApiAuthController@logout');
+
 
         Route::get('/banners', 'BannerController@table');
         Route::get('/banners/{id}', 'BannerController@info');

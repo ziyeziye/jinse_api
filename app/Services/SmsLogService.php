@@ -26,7 +26,7 @@ class SmsLogService extends BaseService
             throw new \Exception('手机号不能为空');
         }
 
-        if (!checkMobile($mobile)) {
+        if (!self::checkMobile($mobile)) {
             throw new \Exception('手机号不正确');
         }
 
@@ -87,9 +87,17 @@ class SmsLogService extends BaseService
     }
 
     /**
+     * 验证手机号
+     */
+    protected static function checkMobile($mobile)
+    {
+        return preg_match('/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\d{8}$/i', $mobile);
+    }
+
+    /**
      * 发送短信验证码
      * @param $mobile
-     * @param $scene 业务场景,模板
+     * @param string $scene 业务场景,模板
      * @param array $data 数据
      * @return bool
      * @throws \Exception

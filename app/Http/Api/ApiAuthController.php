@@ -2,8 +2,10 @@
 
 namespace App\Http\Api;
 
+use App\Services\SmsLogService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ApiAuthController extends BaseController
 {
@@ -17,7 +19,6 @@ class ApiAuthController extends BaseController
     public function login_sms(Request $request)
     {
         $check = $this->_valid([
-            'phone' => 'required',
             'verify_code' => 'required',
         ], [
             'phone.required' => '请输入手机号码',
@@ -30,41 +31,63 @@ class ApiAuthController extends BaseController
 
         $phone = $request->input('phone');
         $verifyCode = $request->input('verify_code', '');
+        $phone = $request->input('phone');
+        $invite_uid = trim($request->input('invite_uid', 2));
 
-        print_r(isMobile($phone));die;
+//        if (!isMobile($phone)) {
+//            return $this->errorWithMsg('手机号码不正确');
+//        }
 
+        if (empty($verifyCode)) {
+            return $this->errorWithMsg('请输入验证码');
+        }
 
         try {
-            $this->validator($request->all());
-            $verifyCode = $request->input('verify_code', '');
-            if (empty($verifyCode)) {
-                throw new \Exception('请输入验证码');
-            }
 
-            $phone = $request->input('phone');
-            if (!SmsLogService::checkCode($phone, $verifyCode, 'register')) {
-                throw new \Exception('验证码错误');
+            //TODO 调试成功,暂时不需要发送短信(默认验证码为111111)
+            if ($verifyCode != '111111') {
+                if (!SmsLogService::checkCode($phone, $verifyCode, 'register')) {
+                    return $this->errorWithMsg('验证码错误');
+                }
             }
 
             $data = [
-                'name' => '用户' . mt_rand(1000, 9999) . '_' . $phone,
-                'avatar' => '../images/defalut_avatar.jpg',   //默认头像
-//              'email' => $data['email'],
+                'username' => $phone,
                 'phone' => $phone,
-                'password' => password_hash($request->input('password'), PASSWORD_DEFAULT),
-                'phone_verified_at' => date('Y-m-d H:i:s'),
+                'nickname' => '用户#' . $phone,
+                'invite_uid' => $invite_uid,
+                'status' => 1,
+                'reg_ip' => $request->getClientIp(),
             ];
 
-            event(new Registered($user = User::create($data)));
-//            $this->guard()->login($user);
-            return $this->registered($request, $user);
+            $user = $this->service()->register_sms($data);
+            if ($user) {
+                //原h5登录流程
+                session(["user_effective_{$user->id}" => time() + 3600]);
+                session(['user' => $user]);
+
+                //app api登录 默认记住我
+                return $this->successWithResult(['user_id' => $user->id, 'api_token' => $user->generateToken(3600, true)]);
+            } else {
+                return $this->errorWithMsg("注册失败");
+            }
 
         } catch (\Exception $e) {
-            return $this->reError($e->getMessage());
+            return $this->errorWithMsg($e->getMessage());
         }
     }
 
     public function login()
+    {
+
+    }
+
+    public function user()
+    {
+        return $this->successWithResult(Auth::guard()->user());
+    }
+
+    public function logout()
     {
 
     }

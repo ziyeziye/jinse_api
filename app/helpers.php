@@ -57,7 +57,16 @@ function getClientIp(){
     return $_SERVER['HTTP_ALI_CDN_REAL_IP'] ?? \Request::getClientIp();
 }
 
+function get_page($pageName = "pageNum", $sizeName = "pageSize")
+{
+    $page = request()->input($pageName, null);
+    $page = !is_numeric($page) ? 1 : $page;
 
+    $size = request()->input($sizeName, 15);
+    $size = !is_numeric($size) ? 15 : $size;
+
+    return [$page, $size];
+}
 
 /**
  * 获取客户端真实ip

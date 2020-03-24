@@ -16,8 +16,8 @@ Route::group(['prefix' => '/api'], function () {
     Route::post('/common/upload', 'CommonController@upload');
     Route::post('/common/send_sms', 'CommonController@sendSms');
 
-    Route::post('/login/sms', 'UserController@login_sms');
-    Route::post('/login', 'UserController@login');
+    Route::post('/login/sms', 'ApiAuthController@login_sms');
+    Route::post('/login', 'ApiAuthController@login');
 
     Route::group(['middleware' => ['auth.user']], function () {
         Route::get('/user/logout', 'UserController@logout');

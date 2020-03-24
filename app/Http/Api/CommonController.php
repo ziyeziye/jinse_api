@@ -78,6 +78,9 @@ class CommonController extends BaseController
      */
     public function sendSms(Request $request)
     {
+        //TODO 调试成功,暂时不需要发送短信(需数据库查看短信验证码)
+        return $this->success();
+
         //验证参数
         $this->_valid([
             'phone' => 'required|regex:/^1[345789][0-9]{9}$/',

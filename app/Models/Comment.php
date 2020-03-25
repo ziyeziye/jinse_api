@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Article
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $create_time
  * @property Carbon $update_time
  * @property int $zan
- *
+ * @property int $re_reply_id
  * @package App\Models
  */
 class Comment extends Model
@@ -53,8 +54,41 @@ class Comment extends Model
         'create_time',
         'update_time',
         'zan',
-
+        're_reply_id',
     ];
+
+    protected $appends = [
+        "is_zan",
+    ];
+
+    public function getIsZanAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Zan::where([
+                'moment_id' => $this->id,
+                'type' => 'comment',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
+
+    public function getContentAttribute($content)
+    {
+        $reID = $this->re_reply_id;
+        if ($reID > 0) {
+            $reInfo = self::query()->with(['user'])->find($reID);
+            if ($reInfo) {
+                $nickname = $reInfo->user ? $reInfo->user->nickname : '账号已注销';
+                $content .= ' //@' . $nickname . ': ' . $reInfo->content;
+            }
+        }
+        return $content;
+    }
 
     public function user()
     {
@@ -76,4 +110,8 @@ class Comment extends Model
         return $this->belongsTo('App\Models\Comment', 'reply_id');
     }
 
+    public function replys()
+    {
+        return $this->hasMany('App\Models\Comment', 'reply_id', 'id');
+    }
 }

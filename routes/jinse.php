@@ -23,13 +23,24 @@ Route::group(['prefix' => '/api'], function () {
         Route::get('/user', 'ApiAuthController@user');
         Route::get('/logout', 'ApiAuthController@logout');
 
+        Route::post('/comments', 'CommentController@save');
+        Route::put('/comments/{id}/zan', 'CommentController@zan');
+
+        Route::put('/articles/{id}/zan', 'ArticleController@zan');
+        Route::put('/articles/{id}/good', 'ArticleController@good');
+        Route::put('/articles/{id}/bad', 'ArticleController@bad');
+
+        //TODO 待调试
         Route::get('/users', 'UserController@table');
         Route::get('/users/{id}', 'UserController@info');
         Route::put('/users/{id}', 'UserController@update');
-
-
     });
 
+    Route::get('/articles', 'ArticleController@table');
+    Route::get('/articles/{id}/comments', 'CommentController@articleComments');
+
+
+    //TODO 待调试
     Route::get('/banners', 'BannerController@table');
     Route::get('/banners/{id}', 'BannerController@info');
 
@@ -40,6 +51,7 @@ Route::group(['prefix' => '/api'], function () {
     Route::get('/hot_words/{id}', 'HotWordController@info');
 
     Route::get('/articles', 'ArticleController@table');
+    Route::get('/articles/{id}/comments', 'CommentController@articleComments');
     Route::get('/articles/{id}', 'ArticleController@info');
 
     Route::get('/categories', 'CategoryController@table');
@@ -55,11 +67,5 @@ Route::group(['prefix' => '/api'], function () {
 
     Route::get('/notices', 'NoticeController@table');
     Route::get('/notices/{id}', 'NoticeController@info');
-
-//        Route::get('/comments', 'CommentController@table');
-//        Route::get('/comments/{id}', 'CommentController@info');
-    Route::post('/comments', 'CommentController@save');
-//        Route::put('/comments/{id}', 'CommentController@update');
-//        Route::delete('/comments', 'CommentController@delete');
 
 });

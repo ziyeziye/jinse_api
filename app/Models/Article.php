@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Article
@@ -54,10 +55,61 @@ class Article extends Model
     ];
 
     protected $appends = [
-        "img_src",
-        "type_name",
-        "video_src"
+        'img_src',
+        'type_name',
+        'video_src',
+        'is_zan',
+        'is_good',
+        'is_bad',
     ];
+
+    public function getIsZanAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Zan::where([
+                'moment_id' => $this->id,
+                'type' => 'article',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
+
+    public function getIsGoodAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Zan::where([
+                'moment_id' => $this->id,
+                'type' => 'article_good',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
+
+    public function getIsBadAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Zan::where([
+                'moment_id' => $this->id,
+                'type' => 'article_bad',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
 
     public function getImgSrcAttribute()
     {
@@ -72,8 +124,8 @@ class Article extends Model
     public function getTypeNameAttribute()
     {
         $type = $this->type;
-        $types = ["默认", "文章", "快讯", "视频"];
-        return isset($types[$type]) ? $types[$type] : "";
+        $types = ['默认', '文章', '快讯', '视频'];
+        return isset($types[$type]) ? $types[$type] : '';
     }
 
     protected $fillable = [
@@ -102,6 +154,11 @@ class Article extends Model
     public function category()
     {
         return $this->belongsTo('App\Models\Category', 'category_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany('App\Models\Comment','article_id','id');
     }
 
 }

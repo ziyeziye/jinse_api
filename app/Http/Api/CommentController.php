@@ -4,6 +4,7 @@ namespace App\Http\Api;
 
 use App\Services\CommentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends BaseController
 {
@@ -17,7 +18,7 @@ class CommentController extends BaseController
     public function table(Request $request)
     {
         //获取数据
-        $page = $request->exists("pageNum") ? get_page() : [null];
+        $page = $request->exists('pageNum') ? get_page() : [null];
         $where = request()->input();
         $result = $this->service()->table($where, ...$page);
         return $this->successWithResult($result);
@@ -33,15 +34,14 @@ class CommentController extends BaseController
     {
         //验证参数
         $check = $this->_valid([
-            'img' => 'required',
-            'article_id' => 'required',
+            'article_id' => 'required|min:1',
             'user_id' => 'required',
-            'comment' => 'required',
+            'content' => 'required|min:1',
         ], [
-            'img.required' => '请上传封面',
-            'user_id.required' => '用户ID不能为空',
+            'article_id.min' => '评论文章错误',
             'article_id.required' => '文章ID不能为空',
-            'comment.required' => '请输入评论内容',
+            'content.required' => '请输入评论内容',
+            'content.min' => '评论内容不能为空',
         ]);
         if (true !== $check) {
             return $this->errorWithMsg($check, 405);
@@ -53,12 +53,13 @@ class CommentController extends BaseController
     {
         $this->valid();
         $data = [
-            "content" => $request->input("content", ''),
-            "user_id" => $request->input("user_id"),
-            "article_id" => $request->input("user_id"),
-            "reply_id" => $request->input("category_id", 0),
-            "reply_user_id" => $request->input("category_id", 0),
-            "zan" => $request->input("zan", 0),
+            'content' => $request->input('content', ''),
+            'user_id' => Auth::guard()->user()->id,
+            'article_id' => $request->input('article_id'),
+            'reply_id' => $request->input('reply_id', 0),
+            're_reply_id' => $request->input('re_reply_id', 0),
+            'reply_user_id' => $request->input('reply_user_id', 0),
+            'zan' => $request->input('zan', 0),
         ];
 
         $result = $this->service()->save($data);
@@ -70,17 +71,18 @@ class CommentController extends BaseController
         //验证参数
         $this->valid();
         $data = [
-            "content" => $request->input("content", ''),
-            "user_id" => $request->input("user_id"),
-            "article_id" => $request->input("user_id"),
-            "reply_id" => $request->input("category_id", 0),
-            "reply_user_id" => $request->input("category_id", 0),
-            "zan" => $request->input("zan", 0),
+            'content' => $request->input('content', ''),
+            'user_id' => Auth::guard()->user()->id,
+            'article_id' => $request->input('article_id'),
+            'reply_id' => $request->input('reply_id', 0),
+            're_reply_id' => $request->input('re_reply_id', 0),
+            'reply_user_id' => $request->input('reply_user_id', 0),
+            'zan' => $request->input('zan', 0),
         ];
 
         $result = $this->service()->update($data, $id);
         if (false === $result) {
-            return $this->errorWithMsg("修改失败");
+            return $this->errorWithMsg('修改失败');
         }
         return $this->successWithResult($result);
     }
@@ -90,7 +92,27 @@ class CommentController extends BaseController
         $ids = $request->input();
         $result = $this->service()->delete($ids);
         if (false === $result) {
-            return $this->errorWithMsg("删除失败");
+            return $this->errorWithMsg('删除失败');
+        }
+        return $this->successWithResult($result);
+    }
+
+    public function articleComments(Request $request, $articleId)
+    {
+        //获取数据
+        $page = $request->exists('pageNum') ? get_page() : [null];
+        $where = request()->input();
+        $where['article_id'] = $articleId;
+        $result = $this->service()->articleComments($where, ...$page);
+        return $this->successWithResult($result);
+    }
+
+    public function zan(Request $request, $id)
+    {
+        $userID = Auth::guard()->user()->id;
+        $result = $this->service()->zan($id,$userID);
+        if (false === $result) {
+            return $this->errorWithMsg('修改失败');
         }
         return $this->successWithResult($result);
     }

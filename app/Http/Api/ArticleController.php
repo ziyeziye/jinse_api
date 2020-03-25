@@ -4,6 +4,7 @@ namespace App\Http\Api;
 
 use App\Services\ArticleService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends BaseController
 {
@@ -19,6 +20,7 @@ class ArticleController extends BaseController
         //获取数据
         $page = $request->exists("pageNum") ? get_page() : [null];
         $where = request()->input();
+        $where['order_by'] = ["order" => "id", "desc" => "desc"];
         $result = $this->service()->table($where, ...$page);
         return $this->successWithResult($result);
     }
@@ -93,6 +95,36 @@ class ArticleController extends BaseController
         $result = $this->service()->delete($ids);
         if (false === $result) {
             return $this->errorWithMsg("删除失败");
+        }
+        return $this->successWithResult($result);
+    }
+
+    public function zan(Request $request, $id)
+    {
+        $userID = Auth::guard()->user()->id;
+        $result = $this->service()->zan($id,$userID,'zan');
+        if (false === $result) {
+            return $this->errorWithMsg('修改失败');
+        }
+        return $this->successWithResult($result);
+    }
+
+    public function good(Request $request, $id)
+    {
+        $userID = Auth::guard()->user()->id;
+        $result = $this->service()->zan($id,$userID,'good');
+        if (false === $result) {
+            return $this->errorWithMsg('修改失败');
+        }
+        return $this->successWithResult($result);
+    }
+
+    public function bad(Request $request, $id)
+    {
+        $userID = Auth::guard()->user()->id;
+        $result = $this->service()->zan($id,$userID,'bad');
+        if (false === $result) {
+            return $this->errorWithMsg('修改失败');
         }
         return $this->successWithResult($result);
     }

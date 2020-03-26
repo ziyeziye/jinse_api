@@ -32,13 +32,21 @@ Route::group(['prefix' => '/api'], function () {
         Route::put('/articles/{id}/zan', 'ArticleController@zan');
         Route::put('/articles/{id}/good', 'ArticleController@good');
         Route::put('/articles/{id}/bad', 'ArticleController@bad');
+        Route::put('/articles/{id}/collect', 'ArticleController@collect');
 
         Route::put('/users/{id}/follow', 'UserController@follow_add');
+
+
+        Route::get('/collections', 'CollectionController@table');
+
+        Route::get('/histories', 'HistoryController@table');
+        Route::post('/histories', 'HistoryController@save');
 
 
         //TODO 待调试
         Route::get('/users/follows', 'UserController@follows');
         Route::get('/users/fans', 'UserController@fans');
+
 
     });
 

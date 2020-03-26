@@ -4,6 +4,7 @@ namespace App\Http\Api;
 
 use App\Services\CollectionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends BaseController
 {
@@ -19,6 +20,8 @@ class CollectionController extends BaseController
         //获取数据
         $page = $request->exists("pageNum") ? get_page() : [null];
         $where = request()->input();
+        $userID = Auth::guard()->user()->id;
+        $where['user_id'] = $userID;
         $result = $this->service()->table($where, ...$page);
         return $this->successWithResult($result);
     }
@@ -33,11 +36,9 @@ class CollectionController extends BaseController
     {
         //验证参数
         $check = $this->_valid([
-            'name' => 'required',
-            'img' => 'required',
+            'article_id' => 'required',
         ], [
-            'name.required' => '请输入名称',
-            'img.required' => '请上传图标',
+            'article_id.required' => '文章ID必须',
         ]);
 
         if (true !== $check) {
@@ -49,10 +50,10 @@ class CollectionController extends BaseController
     public function save(Request $request)
     {
         $this->valid();
+        $userID = Auth::guard()->user()->id;
         $data = [
-            "name" => $request->input("name"),
-            "img" => $request->input("img"),
-            "href" => $request->input("href"),
+            "article_id" => $request->input("article_id"),
+            "user_id" => $userID,
         ];
 
         $result = $this->service()->save($data);
@@ -63,10 +64,10 @@ class CollectionController extends BaseController
     {
         //验证参数
         $this->valid();
+        $userID = Auth::guard()->user()->id;
         $data = [
-            "name" => $request->input("name"),
-            "img" => $request->input("img"),
-            "href" => $request->input("href"),
+            "article_id" => $request->input("article_id"),
+            "user_id" => $userID,
         ];
 
         $result = $this->service()->update($data, $id);

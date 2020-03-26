@@ -61,6 +61,7 @@ class Article extends Model
         'is_zan',
         'is_good',
         'is_bad',
+        'is_collected',
     ];
 
     public function getIsZanAttribute()
@@ -105,6 +106,21 @@ class Article extends Model
             $isZan = Zan::where([
                 'moment_id' => $this->id,
                 'type' => 'article_bad',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
+
+    public function getIsCollectedAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Collection::where([
+                'article_id' => $this->id,
                 'user_id' => $userID
             ])->exists();
         }

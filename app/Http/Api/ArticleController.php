@@ -129,4 +129,11 @@ class ArticleController extends BaseController
         return $this->successWithResult($result);
     }
 
+    public function collect(Request $request, $id)
+    {
+        $userID = Auth::guard()->user()->id;
+        $result = $this->service()->collect($id,$userID);
+        return $this->successWithResult($result);
+    }
+
 }

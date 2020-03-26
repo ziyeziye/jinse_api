@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Article;
+use App\Models\Collection;
 use App\Models\Zan;
 use Illuminate\Support\Facades\DB;
 
@@ -97,5 +98,32 @@ class ArticleService extends BaseService
         return $info;
     }
 
+    public function collect($id, $userID)
+    {
+        $info = self::$model->find($id);
+        if ($info) {
+            //查询是否已点赞
+            $exist = Collection::where([
+                'article_id' => $info->id,
+                'user_id' => $userID
+            ])->exists();
+
+            $data = [
+                'article_id' => $info->id,
+                'user_id' => $userID
+            ];
+            if ($exist) {
+                if (Collection::where($data)->delete()) {
+                    return false;
+                }
+            } else {
+                if (Collection::create($data)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
 
 }

@@ -40,10 +40,13 @@ class Subject extends Model
         "img_src",
     ];
 
-    `public function getImgSrcAttribute()
+    public function getImgSrcAttribute()
     {
+        if (isUrl($this->img)) {
+            return $this->img;
+        }
         return $this->img ? env('APP_URL') . $this->img : '';
-    }`
+    }
 
 	protected $fillable = [
 		'user_id',

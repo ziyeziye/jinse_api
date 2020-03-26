@@ -117,4 +117,14 @@ class CommentController extends BaseController
         return $this->successWithResult($result);
     }
 
+    public function info_comments(Request $request, $id)
+    {
+        //获取数据
+        $page = $request->exists('pageNum') ? get_page() : [null];
+        $where = request()->input();
+        $where['order_by'] = ["order" => "zan", "desc" => "desc"];
+        $result = $this->service()->info_comments($id, $where, ...$page);
+        return $this->successWithResult($result);
+    }
+
 }

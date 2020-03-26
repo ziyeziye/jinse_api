@@ -38,6 +38,7 @@ Route::group(['prefix' => '/api'], function () {
 
     Route::get('/articles', 'ArticleController@table');
     Route::get('/articles/{id}/comments', 'CommentController@articleComments');
+    Route::get('/comments/{id}/comment', 'CommentController@info_comments');
 
 
     //TODO 待调试

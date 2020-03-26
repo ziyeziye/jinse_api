@@ -55,6 +55,7 @@ class CommentService extends BaseService
             $query = $query->where("article_id", $param['article_id']);
         } else {
             $query = $query->whereRaw('0=1');
+            return self::ModelSearch($query, $param, $page, $size);
         }
 
         if (isset($param['reply_id']) && !empty($param['reply_id'])) {
@@ -103,7 +104,7 @@ class CommentService extends BaseService
                     $zan = $info->zan + 1;
                 }
 
-                $zan = $zan > 0 ? $zan: 0;
+                $zan = $zan > 0 ? $zan : 0;
                 if ($info->update(['zan' => $zan])) {
                     DB::commit();
                 } else {
@@ -114,5 +115,30 @@ class CommentService extends BaseService
             }
         }
         return $info;
+    }
+
+    public static function info_comments($id, $param = [], int $page = null, int $size = 15)
+    {
+        $info = self::$model->with(['user' => function ($query) {
+            $query->select('id', 'username', 'nickname', 'avatar');
+        }, 'article' => function ($query) {
+            $query->select('id', 'name', 'type');
+        }])->find($id);
+
+        $query = self::$model->query();
+        if (!$info) {
+            $query = $query->whereRaw('0=1');
+            return self::ModelSearch($query, $param, $page, $size);
+        } else {
+            $query->where('reply_id', $id);
+        }
+
+        $query = $query->with(['user' => function ($query) {
+            $query->select('id', 'username', 'nickname', 'avatar');
+        }]);
+
+        $list = self::ModelSearch($query, $param, $page, $size)->toArray();
+        $list['info'] = $info;
+        return $list;
     }
 }

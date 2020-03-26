@@ -6,10 +6,11 @@
  * @param string $hex
  * @return int|string
  */
-function HexDec2(string $hex){
+function HexDec2(string $hex)
+{
     $dec = 0;
     $len = strlen($hex);
-    for($i = 1; $i <= $len; $i++){
+    for ($i = 1; $i <= $len; $i++) {
         $dec = bcadd($dec, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
     }
     return $dec;
@@ -22,8 +23,9 @@ function HexDec2(string $hex){
  * @param $address_arr
  * @return bool
  */
-function addressInArray($str, $address_arr){
-    foreach($address_arr as &$v){
+function addressInArray($str, $address_arr)
+{
+    foreach ($address_arr as &$v) {
         $v = strtolower($v);
     }
     return in_array(strtolower($str), $address_arr);
@@ -35,16 +37,17 @@ function addressInArray($str, $address_arr){
  * @param $num
  * @return mixed
  */
-function float_format($num){
+function float_format($num)
+{
     $num = explode('.', $num);
-    if(count($num) == 1){
+    if (count($num) == 1) {
         return $num[0];
     }
     $de = $num[1];
     $de = rtrim($de, 0);
-    if(strlen($de) > 0){
+    if (strlen($de) > 0) {
         return $num[0] . '.' . $de;
-    }else{
+    } else {
         return $num[0];
     }
 }
@@ -53,7 +56,8 @@ function float_format($num){
 /**
  * 获取客户端IP
  */
-function getClientIp(){
+function getClientIp()
+{
     return $_SERVER['HTTP_ALI_CDN_REAL_IP'] ?? \Request::getClientIp();
 }
 
@@ -273,3 +277,20 @@ function isMobile($mobile)
 {
     return preg_match('/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\d{8}$/i', $mobile);
 }
+
+/**
+ * 判断是否是一个链接
+ * @param $url
+ * @return bool
+ */
+function isUrl($url)
+{
+    if (!empty($url)) {
+        $preg = "/^http(s)?:\\/\\/.+/";
+        if (preg_match($preg, $url)) {
+            return true;
+        }
+    }
+    return false;
+}
+

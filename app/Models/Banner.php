@@ -37,6 +37,9 @@ class Banner extends Model
 
     public function getImgSrcAttribute()
     {
+        if (isUrl($this->img)) {
+            return $this->img;
+        }
         return $this->img ? env('APP_URL') . $this->img : '';
     }
 

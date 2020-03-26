@@ -45,6 +45,9 @@ class User extends Authenticatable
 
     public function getAvatarSrcAttribute()
     {
+        if (isUrl($this->avatar)) {
+            return $this->avatar;
+        }
         return $this->avatar ? env('APP_URL') . $this->avatar : '';
     }
 

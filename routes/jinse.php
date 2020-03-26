@@ -33,10 +33,13 @@ Route::group(['prefix' => '/api'], function () {
         Route::put('/articles/{id}/good', 'ArticleController@good');
         Route::put('/articles/{id}/bad', 'ArticleController@bad');
 
+        Route::put('/users/{id}/follow', 'UserController@follow_add');
+
+
         //TODO 待调试
-//        Route::get('/users', 'UserController@table');
-//        Route::get('/users/{id}', 'UserController@info');
-//        Route::put('/users/{id}', 'UserController@update');
+        Route::get('/users/follows', 'UserController@follows');
+        Route::get('/users/fans', 'UserController@fans');
+
     });
 
     //=============================不需要登陆====================================================

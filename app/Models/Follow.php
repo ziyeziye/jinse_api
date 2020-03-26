@@ -14,10 +14,10 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $id
  * @property int $user_id
- * @property int $r_id
+ * @property int $moment_id
+ * @property string $type 'user','tag'
  * @property Carbon $create_time
  * @property Carbon $update_time
- * @property bool $type
  *
  * @package App\Models
  */
@@ -28,20 +28,9 @@ class Follow extends Model
 
 	protected $casts = [
 		'user_id' => 'int',
-		'r_id' => 'int',
-		'type' => 'string'
+        'moment_id' => 'int',
+        'type' => 'string',
 	];
-
-    protected $appends = [
-        "type_name"
-    ];
-
-    public function getTypeNameAttribute()
-    {
-        $type = $this->type;
-        $types = ["默认","图片", "文章", "活动"];
-        return isset($types[$type]) ? $types[$type] : "";
-    }
 
 	protected $dates = [
 		'create_time',
@@ -49,10 +38,10 @@ class Follow extends Model
 	];
 
 	protected $fillable = [
-		'user_id',
-		'r_id',
-		'create_time',
-		'update_time',
-		'type'
+        'user_id',
+        'moment_id',
+        'type',
+        'create_time',
+        'update_time',
 	];
 }

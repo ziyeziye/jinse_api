@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 /**
@@ -69,7 +70,24 @@ class User extends Model
         'verify_name',
         'invite_user',
         'verify_status',
+        'is_follow'
     ];
+
+    public function getIsFollowAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Follow::where([
+                'moment_id' => $this->id,
+                'type' => 'user',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
 
     public function getAvatarSrcAttribute()
     {

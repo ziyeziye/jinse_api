@@ -67,7 +67,8 @@ class User extends Model
         'avatar_src',
         'status_name',
         'verify_name',
-        'invite_user'
+        'invite_user',
+        'verify_status',
     ];
 
     public function getAvatarSrcAttribute()
@@ -90,6 +91,15 @@ class User extends Model
         $verifyID = $this->verify_id;
         if ($verifyID == 0) {
             return '未认证';
+        }
+    }
+
+    public function getVerifyStatusAttribute()
+    {
+        //0未认证 1认证成功
+        $verifyID = $this->verify_id;
+        if ($verifyID == 0) {
+            return 0;
         }
     }
 

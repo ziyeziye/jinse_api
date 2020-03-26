@@ -17,8 +17,11 @@ Route::group(['prefix' => '/api'], function () {
     Route::post('/common/send_sms', 'CommonController@sendSms');
 
     Route::post('/login/sms', 'ApiAuthController@login_sms');
+
+    //TODO 待调试
     Route::post('/login', 'ApiAuthController@login');
 
+    //=============================需要登陆====================================================
     Route::group(['middleware' => ['api.user']], function () {
         Route::get('/user', 'ApiAuthController@user');
         Route::get('/logout', 'ApiAuthController@logout');
@@ -31,42 +34,41 @@ Route::group(['prefix' => '/api'], function () {
         Route::put('/articles/{id}/bad', 'ArticleController@bad');
 
         //TODO 待调试
-        Route::get('/users', 'UserController@table');
-        Route::get('/users/{id}', 'UserController@info');
-        Route::put('/users/{id}', 'UserController@update');
+//        Route::get('/users', 'UserController@table');
+//        Route::get('/users/{id}', 'UserController@info');
+//        Route::put('/users/{id}', 'UserController@update');
     });
 
+    //=============================不需要登陆====================================================
     Route::get('/articles', 'ArticleController@table');
     Route::get('/articles/{id}/comments', 'CommentController@articleComments');
     Route::get('/comments/{id}/comment', 'CommentController@info_comments');
+    Route::get('/articles/{id}', 'ArticleController@info');
+
+    Route::get('/tabbars', 'CategoryController@tabbars');
+    Route::get('/banners', 'BannerController@table');
+
 
 
     //TODO 待调试
-    Route::get('/banners', 'BannerController@table');
-    Route::get('/banners/{id}', 'BannerController@info');
 
-    Route::get('/tags', 'TagController@table');
-    Route::get('/tags/{id}', 'TagController@info');
-
-    Route::get('/hot_words', 'HotWordController@table');
-    Route::get('/hot_words/{id}', 'HotWordController@info');
-
-    Route::get('/articles', 'ArticleController@table');
-    Route::get('/articles/{id}/comments', 'CommentController@articleComments');
-    Route::get('/articles/{id}', 'ArticleController@info');
-
-    Route::get('/categories', 'CategoryController@table');
-    Route::get('/categories/group', 'CategoryController@group');
-    Route::get('/categories/{id}', 'CategoryController@info');
-
-    Route::get('/subjects', 'SubjectController@table');
-    Route::get('/subjects/{id}/articles', 'SubjectController@articles');
-    Route::get('/subjects/{id}', 'SubjectController@info');
-
-    Route::get('/pages', 'PageController@table');
-    Route::get('/pages/{id}', 'PageController@info');
-
-    Route::get('/notices', 'NoticeController@table');
-    Route::get('/notices/{id}', 'NoticeController@info');
+//    Route::get('/tags', 'TagController@table');
+//    Route::get('/tags/{id}', 'TagController@info');
+//
+//    Route::get('/hot_words', 'HotWordController@table');
+//    Route::get('/hot_words/{id}', 'HotWordController@info');
+//
+//    Route::get('/articles/{id}', 'ArticleController@info');
+//
+//
+//    Route::get('/subjects', 'SubjectController@table');
+//    Route::get('/subjects/{id}/articles', 'SubjectController@articles');
+//    Route::get('/subjects/{id}', 'SubjectController@info');
+//
+//    Route::get('/pages', 'PageController@table');
+//    Route::get('/pages/{id}', 'PageController@info');
+//
+//    Route::get('/notices', 'NoticeController@table');
+//    Route::get('/notices/{id}', 'NoticeController@info');
 
 });

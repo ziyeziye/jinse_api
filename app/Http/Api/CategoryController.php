@@ -108,4 +108,16 @@ class CategoryController extends BaseController
 
         return $this->successWithResult($result);
     }
+
+    public function tabbars(Request $request)
+    {
+        //获取数据
+        $page = $request->exists("pageNum") ? get_page() : [null];
+        $where['order_by'] = ["order" => "sort", "desc" => "asc"];
+        $result = $this->service()->table($where)->toArray();
+
+        array_unshift($result,['id'=>'follow','name'=>'关注'],['id'=>'top','name'=>'头条']);
+
+        return $this->successWithResult($result);
+    }
 }

@@ -73,6 +73,7 @@ class User extends Model
         'is_follow',
         'follows_count',
         'fans_count',
+        'follows_tag_count',
     ];
 
     public function getIsFollowAttribute()
@@ -143,6 +144,10 @@ class User extends Model
         return Follow::where(['moment_id' => $this->id,'type'=>'user'])->count();
     }
 
+    public function getFollowsTagCountAttribute()
+    {
+        return Follow::where(['user_id' => $this->id,'type'=>'tag'])->count();
+    }
 
     //父子关系最大限制代数
     public static $P_TREE_LAYER_COUNT = 32;

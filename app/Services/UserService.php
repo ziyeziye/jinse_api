@@ -191,50 +191,6 @@ class UserService extends BaseService
         throw new exception('用户注册失败', 52);
     }
 
-    /**
-     * 关注
-     * @param $id
-     * @param $userID
-     * @param int $type 1作者 2标签
-     * @return mixed
-     */
-    public function follow($id, $userID, $type = 'user')
-    {
-        if ($type=='user') {
-            $info = self::$model->find($id);
-        }elseif ($type=='tag') {
-            $info = Tag::find($id);
-        }else{
-            $info = false;
-        }
-
-        if ($info) {
-            //查询是否已点赞
-            $exist = Follow::where([
-                'moment_id' => $info->id,
-                'type' => $type,
-                'user_id' => $userID
-            ])->exists();
-
-            $data = [
-                'moment_id' => $info->id,
-                'type' => $type,
-                'user_id' => $userID
-            ];
-            if ($exist) {
-                if (Follow::where($data)->delete()) {
-                    return false;
-                }
-            } else {
-                if (Follow::create($data)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return false;
-    }
-
     public static function follows($userID, int $page = null, int $size = 15)
     {
         $query = self::$model->query();
@@ -269,5 +225,11 @@ class UserService extends BaseService
 
         $param['order_by'] = ['order' => 'follows.create_time', 'desc' => 'desc'];
         return self::ModelSearch($query, [], $page, $size);
+    }
+
+    public static function authors($param = [], int $page = null, int $size = 15)
+    {
+        $query = self::$model->query();
+        return self::ModelSearch($query, ['fields'=>['id','username','nickname','avatar']], $page, $size);
     }
 }

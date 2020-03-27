@@ -7,10 +7,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Tag
- * 
+ *
  * @property int $id
  * @property string $name
  * @property int $number
@@ -33,4 +34,24 @@ class Tag extends Model
 		'number',
 		'weight'
 	];
+
+    protected $appends = [
+        'is_follow',
+    ];
+
+    public function getIsFollowAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Follow::where([
+                'moment_id' => $this->id,
+                'type' => 'tag',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
 }

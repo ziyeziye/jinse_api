@@ -43,11 +43,17 @@ Route::group(['prefix' => '/api'], function () {
         Route::get('/histories', 'HistoryController@table');
         Route::post('/histories', 'HistoryController@save');
 
+        Route::get('/users/follows', 'UserController@follows');
 
+        Route::put('/tags/{id}/follow', 'TagController@follow_add');
 
     });
 
     //=============================不需要登陆====================================================
+    Route::get('/tags', 'TagController@table');
+
+    Route::get('/users/authors', 'UserController@authors');
+
     Route::get('/articles', 'ArticleController@table');
     Route::get('/articles/{id}/comments', 'CommentController@articleComments');
     Route::get('/comments/{id}/comment', 'CommentController@info_comments');

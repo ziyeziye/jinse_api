@@ -2,8 +2,10 @@
 
 namespace App\Http\Api;
 
+use App\Services\FollowService;
 use App\Services\TagService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TagController extends BaseController
 {
@@ -19,6 +21,7 @@ class TagController extends BaseController
         //获取数据
         $page = $request->exists("pageNum") ? get_page() : [null];
         $where = request()->input();
+        $where['order_by'] = ["order" => "weight", "desc" => "desc"];
         $result = $this->service()->table($where, ...$page);
         return $this->successWithResult($result);
     }
@@ -84,4 +87,10 @@ class TagController extends BaseController
         return $this->successWithResult($result);
     }
 
+    public function follow_add(Request $request, $id)
+    {
+        $userID = Auth::guard()->user()->id;
+        $result = FollowService::follow($id,$userID,'tag');
+        return $this->successWithResult($result);
+    }
 }

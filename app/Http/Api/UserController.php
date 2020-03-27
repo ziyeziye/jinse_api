@@ -2,6 +2,7 @@
 
 namespace App\Http\Api;
 
+use App\Services\FollowService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -134,7 +135,7 @@ class UserController extends BaseController
     public function follow_add(Request $request, $id)
     {
         $userID = Auth::guard()->user()->id;
-        $result = $this->service()->follow($id,$userID,'user');
+        $result = FollowService::follow($id,$userID,'user');
         return $this->successWithResult($result);
     }
 
@@ -153,6 +154,15 @@ class UserController extends BaseController
         $page = $request->exists("pageNum") ? get_page() : [null];
         $userID = Auth::guard()->user()->id;
         $result = $this->service()->fans($userID, ...$page);
+        return $this->successWithResult($result);
+    }
+
+    public function authors(Request $request)
+    {
+        //获取数据
+        $page = $request->exists("pageNum") ? get_page() : [null];
+        $where = request()->input();
+        $result = $this->service()->authors($where, ...$page);
         return $this->successWithResult($result);
     }
 }

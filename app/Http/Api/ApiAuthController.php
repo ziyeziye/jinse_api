@@ -84,7 +84,6 @@ class ApiAuthController extends BaseController
 
     public function user()
     {
-        $user = Auth::guard()->user();
         return $this->successWithResult(Auth::guard()->user());
     }
 

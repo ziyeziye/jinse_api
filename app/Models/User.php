@@ -70,7 +70,9 @@ class User extends Model
         'verify_name',
         'invite_user',
         'verify_status',
-        'is_follow'
+        'is_follow',
+        'follows_count',
+        'fans_count',
     ];
 
     public function getIsFollowAttribute()
@@ -131,6 +133,17 @@ class User extends Model
         }
     }
 
+    public function getFollowsCountAttribute()
+    {
+        return Follow::where(['user_id' => $this->id,'type'=>'user'])->count();
+    }
+
+    public function getFansCountAttribute()
+    {
+        return Follow::where(['moment_id' => $this->id,'type'=>'user'])->count();
+    }
+
+
     //父子关系最大限制代数
     public static $P_TREE_LAYER_COUNT = 32;
 
@@ -146,7 +159,6 @@ class User extends Model
     {
         return hash('sha256', $prefix . $username . $password . $salt, false);
     }
-
 
     /**
      * 创建昵称
@@ -198,4 +210,15 @@ class User extends Model
         $this->save();
         return $token;
     }
+
+    public function follows()
+    {
+        return $this->hasMany('App\Models\Follow','user_id','id');
+    }
+
+    public function fans()
+    {
+        return $this->hasMany('App\Models\Follow','moment_id','id');
+    }
+
 }

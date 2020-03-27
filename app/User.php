@@ -2,9 +2,12 @@
 
 namespace App;
 
+use App\Models\Follow;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -40,8 +43,28 @@ class User extends Authenticatable
         'avatar_src',
         'status_name',
         'verify_name',
-        'invite_user'
+        'invite_user',
+        'verify_status',
+        'is_follow',
+        'follows_count',
+        'fans_count',
     ];
+
+    public function getIsFollowAttribute()
+    {
+        $isZan = false;
+        $user = Auth::guard('api')->user();
+
+        if ($user) {
+            $userID = $user->id;
+            $isZan = Follow::where([
+                'moment_id' => $this->id,
+                'type' => 'user',
+                'user_id' => $userID
+            ])->exists();
+        }
+        return $isZan;
+    }
 
     public function getAvatarSrcAttribute()
     {
@@ -66,6 +89,15 @@ class User extends Authenticatable
         }
     }
 
+    public function getVerifyStatusAttribute()
+    {
+        //0未认证 1认证成功
+        $verifyID = $this->verify_id;
+        if ($verifyID == 0) {
+            return 0;
+        }
+    }
+
     public function getInviteUserAttribute()
     {
         $inviteID = $this->invite_uid;
@@ -74,5 +106,93 @@ class User extends Authenticatable
         } else {
             return self::find($this->invite_uid);
         }
+    }
+
+    public function getFollowsCountAttribute()
+    {
+        return Follow::where(['user_id' => $this->id,'type'=>'user'])->count();
+    }
+
+    public function getFansCountAttribute()
+    {
+        return Follow::where(['moment_id' => $this->id,'type'=>'user'])->count();
+    }
+
+    //父子关系最大限制代数
+    public static $P_TREE_LAYER_COUNT = 32;
+
+    /**
+     * 生产密码
+     * @param $prefix
+     * @param $username
+     * @param $password
+     * @param $salt
+     * @return string
+     */
+    public static function hashPassword($prefix, $username, $password, $salt)
+    {
+        return hash('sha256', $prefix . $username . $password . $salt, false);
+    }
+
+
+    /**
+     * 创建昵称
+     * @param string $lang
+     * @return string
+     */
+    public static function createNickname($lang = 'zh')
+    {
+        while (true) {
+            $nickname = trans('international.user', [], $lang) . '_' . Str::random(8);
+
+            if (self::where('nickname', $nickname)->count() == 0) {
+                return $nickname;
+            }
+        }
+    }
+
+    /**
+     * 创建邀请码
+     */
+    public static function createCodeInvite()
+    {
+        while (true) {
+            $code_invite = Str::random(6);
+
+            if (self::where('code_invite', $code_invite)->count() == 0) {
+                return $code_invite;
+            }
+        }
+    }
+
+    /**
+     * 生成api_token
+     * @param int $expiresTime 过期时间,默认30分钟
+     * @param bool $remember 记住我
+     * @return string
+     */
+    public function generateToken($expiresTime = 1800, $remember = false)
+    {
+        $token = Str::random(80);
+        $api_token = hash('sha256', $token);
+        $this->api_token = $api_token;
+        $this->expires_at = date('Y-m-d H:i:s', time() + $expiresTime);
+        if ($remember) {
+            $this->remember_token = $this->api_token;
+        } else {
+            $this->remember_token = '';
+        }
+        $this->save();
+        return $token;
+    }
+
+    public function follows()
+    {
+        return $this->hasMany('App\Models\Follow','user_id','id');
+    }
+
+    public function fans()
+    {
+        return $this->hasMany('App\Models\Follow','moment_id','id');
     }
 }

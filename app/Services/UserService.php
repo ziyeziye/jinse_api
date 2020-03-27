@@ -238,12 +238,36 @@ class UserService extends BaseService
     public static function follows($userID, int $page = null, int $size = 15)
     {
         $query = self::$model->query();
-        return self::ModelSearch($query, [], $page, $size);
+        $query = $query->where('type', 'user');
+        if (!empty($userID)) {
+            $query = $query->where('follows.user_id', $userID);
+        }else{
+            $query = $query->whereRaw('0=1');
+        }
+        $query = $query->rightJoin('follows', 'moment_id', '=', 'users.id')
+            ->select(
+                'users.id', 'users.username','users.nickname','users.avatar'
+            );
+
+        $param['order_by'] = ['order' => 'follows.create_time', 'desc' => 'desc'];
+        return self::ModelSearch($query, $param, $page, $size);
     }
 
     public static function fans($userID, int $page = null, int $size = 15)
     {
         $query = self::$model->query();
+        $query = $query->where('type', 'user');
+        if (!empty($userID)) {
+            $query = $query->where('follows.moment_id', $userID);
+        }else{
+            $query = $query->whereRaw('0=1');
+        }
+        $query = $query->rightJoin('follows', 'user_id', '=', 'users.id')
+            ->select(
+                'users.id', 'users.username','users.nickname','users.avatar'
+            );
+
+        $param['order_by'] = ['order' => 'follows.create_time', 'desc' => 'desc'];
         return self::ModelSearch($query, [], $page, $size);
     }
 }

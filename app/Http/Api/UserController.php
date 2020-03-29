@@ -165,4 +165,13 @@ class UserController extends BaseController
         $result = $this->service()->authors($where, ...$page);
         return $this->successWithResult($result);
     }
+
+    public function coinfocus(Request $request, $code)
+    {
+        $userID = Auth::guard()->user()->id;
+        $exchange_code = $request->input('exchange_code', '');
+        $result = $this->service()->coinfocus($code, $exchange_code, $userID);
+        return $this->successWithResult($result);
+    }
+
 }

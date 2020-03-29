@@ -69,7 +69,7 @@ class BaseService
         }
 
         if (is_numeric($page)) {
-            $data = $model->paginate($size, $option['fields'], 'page', $page);
+            $data = $model->select($option['fields'])->paginate($size, null, 'page', $page);
         } else {
             $data = $model->select($option['fields'])->get();
         }

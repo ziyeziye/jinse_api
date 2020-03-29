@@ -6,6 +6,7 @@ use App\Models\Follow;
 use App\Models\Password;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserCoins;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use exception;
@@ -232,4 +233,31 @@ class UserService extends BaseService
         $query = self::$model->query();
         return self::ModelSearch($query, ['fields'=>['id','username','nickname','avatar']], $page, $size);
     }
+
+    public function coinfocus($code, $exchange_code='',$userID)
+    {
+        $info = self::$model->find($userID);
+        if ($info) {
+            $data = [
+                'coin_code' => $code,
+                'user_id' => $userID,
+                'exchange_code' => $exchange_code
+            ];
+
+            //查询是否已点赞
+            $exist = UserCoins::where($data)->exists();
+            if ($exist) {
+                if (UserCoins::where($data)->delete()) {
+                    return false;
+                }
+            } else {
+                if (UserCoins::create($data)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
 }

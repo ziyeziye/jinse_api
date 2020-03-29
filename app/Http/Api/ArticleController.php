@@ -28,6 +28,9 @@ class ArticleController extends BaseController
     public function info($id)
     {
         $result = $this->service()->info($id);
+        if ($result) {
+            $result->update(['number'=>$result->number+1]);
+        }
         return $this->successWithResult($result);
     }
 
@@ -133,6 +136,40 @@ class ArticleController extends BaseController
     {
         $userID = Auth::guard()->user()->id;
         $result = $this->service()->collect($id,$userID);
+        return $this->successWithResult($result);
+    }
+
+    public function follow_author(Request $request)
+    {
+        //获取数据
+        $page = $request->exists("pageNum") ? get_page() : [null];
+        $where = request()->input();
+        $userID = Auth::guard()->user()->id;
+        $where['user_id'] = $userID;
+        $where['order_by'] = ["order" => "id", "desc" => "desc"];
+        $result = $this->service()->follow_author($where, ...$page);
+        return $this->successWithResult($result);
+    }
+
+    public function follow_tag(Request $request)
+    {
+        //获取数据
+        $page = $request->exists("pageNum") ? get_page() : [null];
+        $where = request()->input();
+        $userID = Auth::guard()->user()->id;
+        $where['user_id'] = $userID;
+        $where['order_by'] = ["order" => "id", "desc" => "desc"];
+        $result = $this->service()->follow_tag($where, ...$page);
+        return $this->successWithResult($result);
+    }
+
+    public function top(Request $request)
+    {
+        //获取数据
+        $page = $request->exists("pageNum") ? get_page() : [null];
+        $where = request()->input();
+        $where['order_by'] = ["order" => "id", "desc" => "desc"];
+        $result = $this->service()->table($where, ...$page);
         return $this->successWithResult($result);
     }
 

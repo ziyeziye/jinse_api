@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Article;
 use App\Models\Collection;
+use App\Models\Follow;
 use App\Models\Zan;
 use Illuminate\Support\Facades\DB;
 
@@ -39,7 +40,11 @@ class ArticleService extends BaseService
         $query->with(['author' => function ($query) {
             $query->select('id', 'username', 'nickname', 'avatar');
         }]);
-        $query->with("category");
+
+        $param['fields'] = [
+            'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
+        ];
+//        $query->with("category");
         $query->withCount('comments');
         return self::ModelSearch($query, $param, $page, $size);
     }
@@ -55,9 +60,9 @@ class ArticleService extends BaseService
         return $info;
     }
 
-    public function zan($id, $userID, $type='zan')
+    public function zan($id, $userID, $type = 'zan')
     {
-        $zanTypes = ['zan'=>'article','good'=>'article_good','bad'=>'article_bad'];
+        $zanTypes = ['zan' => 'article', 'good' => 'article_good', 'bad' => 'article_bad'];
         $info = self::$model->find($id);
         if ($info) {
             //查询是否已点赞
@@ -85,7 +90,7 @@ class ArticleService extends BaseService
                     $zan = $info->$type + 1;
                 }
 
-                $zan = $zan > 0 ? $zan: 0;
+                $zan = $zan > 0 ? $zan : 0;
                 if ($info->update([$type => $zan])) {
                     DB::commit();
                 } else {
@@ -124,6 +129,65 @@ class ArticleService extends BaseService
             return false;
         }
         return false;
+    }
+
+
+    public static function follow_author($param = [], int $page = null, int $size = 15)
+    {
+        $query = self::$model->query();
+        $userIds = [];
+        if (isset($param['user_id']) && !empty($param['user_id'])) {
+            $userIds = Follow::where([
+                'user_id' => $param['user_id'],
+                'type' => 'user',
+            ])->pluck('moment_id')->toArray();
+
+            if (!empty($userIds)) {
+                $query = $query->with(['author' => function ($query) {
+                    $query->select('id', 'username', 'nickname', 'avatar');
+                }]);
+                //        $query->withCount('comments');
+
+                $param['fields'] = [
+                    'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
+                ];
+                $query = $query->whereIn('user_id', $userIds)
+                ->whereIn('type',[1,3]);
+                return self::ModelSearch($query, $param, $page, $size);
+            }
+        }
+
+        $query = $query->whereRaw('0=1');
+        return self::ModelSearch($query, $param, $page, $size);
+    }
+
+    public static function follow_tag($param = [], int $page = null, int $size = 15)
+    {
+        $query = self::$model->query();
+        $userIds = [];
+//        if (isset($param['user_id']) && !empty($param['user_id'])) {
+//            $userIds = Follow::where([
+//                'user_id' => $param['user_id'],
+//                'type' => 'user',
+//            ])->pluck('moment_id')->toArray();
+//
+//            if (!empty($userIds)) {
+//                $query = $query->with(['author' => function ($query) {
+//                    $query->select('id', 'username', 'nickname', 'avatar');
+//                }]);
+//                //        $query->withCount('comments');
+//
+//                $param['fields'] = [
+//                    'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
+//                ];
+//                $query = $query->whereIn('user_id', $userIds)
+//                    ->whereIn('type',[1,3]);
+//                return self::ModelSearch($query, $param, $page, $size);
+//            }
+//        }
+
+        $query = $query->whereRaw('0=1');
+        return self::ModelSearch($query, $param, $page, $size);
     }
 
 }

@@ -32,7 +32,8 @@ class ArticleService extends BaseService
             $query = $query->where("name", "like", "%{$param['name']}%");
         }
         if (isset($param['type']) && !empty($param['type'])) {
-            $query = $query->where("type", $param['type']);
+            $type = is_array($param['type'])?:explode(',', $param['type']);
+            $query = $query->whereIn("type", $type);
         }
         if (isset($param['category_id']) && !empty($param['category_id'])) {
             $query = $query->where("category_id", $param['category_id']);

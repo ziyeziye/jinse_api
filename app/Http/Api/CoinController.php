@@ -66,7 +66,7 @@ class CoinController extends BaseController
     public function coinfocus(Request $request)
     {
         $userID = Auth::guard()->user()->id;
-        $codes = UserCoins::where('user_id', $userID)->pluck('coin_code')->toArray();
+        $codes = UserCoins::where('user_id', $userID)->groupBy('coin_code')->pluck('coin_code')->toArray();
         $result = '[]';
         if (!empty($codes)) {
             $url = 'https://api.coincap.io/v2/assets';

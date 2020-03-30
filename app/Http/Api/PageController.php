@@ -88,4 +88,10 @@ class PageController extends BaseController
         return $this->successWithResult($result);
     }
 
+    public function pageType(Request $request,$type)
+    {
+        $result = $this->service()->pageType($type);
+        return $this->successWithResult($result);
+    }
+
 }

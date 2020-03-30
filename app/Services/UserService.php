@@ -241,7 +241,7 @@ class UserService extends BaseService
             $data = [
                 'coin_code' => $code,
                 'user_id' => $userID,
-//                'exchange_code' => $exchange_code
+                'exchange_code' => $exchange_code
             ];
 
             //查询是否已点赞
@@ -251,7 +251,6 @@ class UserService extends BaseService
                     return false;
                 }
             } else {
-                $data['exchange_code'] = $exchange_code;
                 if (UserCoins::create($data)) {
                     return true;
                 }

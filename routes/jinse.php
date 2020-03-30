@@ -85,14 +85,12 @@ Route::group(['prefix' => '/api'], function () {
 
     Route::get('/hot_words', 'HotWordController@table');
 
+    Route::get('/pages/{type}', 'PageController@pageType');
 
     //TODO 待调试
 //    Route::get('/subjects', 'SubjectController@table');
 //    Route::get('/subjects/{id}/articles', 'SubjectController@articles');
 //    Route::get('/subjects/{id}', 'SubjectController@info');
-//
-//    Route::get('/pages', 'PageController@table');
-//    Route::get('/pages/{id}', 'PageController@info');
 //
 //    Route::get('/notices', 'NoticeController@table');
 //    Route::get('/notices/{id}', 'NoticeController@info');

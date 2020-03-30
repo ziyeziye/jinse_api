@@ -21,4 +21,9 @@ class PageService extends BaseService
         return self::$_object;
     }
 
+    public function pageType($type)
+    {
+        return self::$model->where('type',$type)->first();
+    }
+
 }

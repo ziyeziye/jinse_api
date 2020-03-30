@@ -28,11 +28,17 @@ class ArticleService extends BaseService
     public static function table($param = [], int $page = null, int $size = 15)
     {
         $query = self::$model->query();
+        $param['fields'] = [
+            'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
+        ];
         if (isset($param['name']) && !empty($param['name'])) {
             $query = $query->where("name", "like", "%{$param['name']}%");
         }
         if (isset($param['type']) && !empty($param['type'])) {
             $type = is_array($param['type'])?:explode(',', $param['type']);
+            if ($param['type']==2) {
+                $param['fields'][] = 'content';
+            }
             $query = $query->whereIn("type", $type);
         }
         if (isset($param['category_id']) && !empty($param['category_id'])) {
@@ -42,9 +48,6 @@ class ArticleService extends BaseService
             $query->select('id', 'username', 'nickname', 'avatar');
         }]);
 
-        $param['fields'] = [
-            'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
-        ];
 //        $query->with("category");
         $query->withCount('comments');
         return self::ModelSearch($query, $param, $page, $size);

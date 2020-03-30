@@ -95,14 +95,15 @@ class CoinController extends BaseController
         $data = [
             "code" => $code,
             "webp" => 1,
+            'token' => ''
         ];
 
         $header = [
-            'Host: dncapi.bqiapp.com',
+            'Host: mdncapi.bqiapp.com',
             'Origin: https://m.feixiaohao.com',
             'Referer: https://m.feixiaohao.com',
             'Content-Type: application/json; charset=utf-8',
-            'Content-Length: 27'
+            'Accept: application/json, text/plain, */*'
         ];
         $result = curlPost($url, json_encode($data), $header, true);
         return $this->successWithResult(json_decode($result));

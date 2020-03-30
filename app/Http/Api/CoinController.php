@@ -133,12 +133,19 @@ class CoinController extends BaseController
         $result = json_decode($result, true);
         if (isset($result['data']) && isset($result['data']['markets']) && !empty($result['data']['markets'])) {
             //查询是否已点赞
-            $userID = Auth::guard('api')->user()->id;
+            $user = Auth::guard('api')->user();
+            $userID = false;
+            if ($user) {
+                $userID = $user->id;
+            }
             foreach ($result['data']['markets'] as $key=>$market) {
-                $result['data']['markets'][$key]['is_follow'] = UserCoins::where([
-                    'user_id' => $userID,
-                    'coin_code' => $market['coin_code'],
-                ])->exists();
+                $result['data']['markets'][$key]['is_follow'] = false;
+                if ($user) {
+                    $result['data']['markets'][$key]['is_follow'] = UserCoins::where([
+                        'user_id' => $userID,
+                        'coin_code' => $market['coin_code'],
+                    ])->exists();
+                }
             }
         }
 

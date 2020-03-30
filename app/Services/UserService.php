@@ -160,20 +160,20 @@ class UserService extends BaseService
                     return false;
                 }
             }
-
-
             $info = $info->fill($data);
-            if (isset($data['password']) && isset($data['encrypt_password'])) {
+
+            if (isset($data['password'])) {
                 $salt = Str::random(6);//盐
                 $password = new Password();
-                $password->password = User::HashPassword($info->prefix, $info->username, $data['encrypt_password'], $salt);
+                $password->password = User::HashPassword($info->prefix, $info->username, $data['password'], $salt);
                 if ($password->save()) {
-                    $info->salt = $salt;
+                    $data['salt'] = $salt;
                 } else {
                     //密码修改失败
                     return false;
                 }
             }
+            $info->update($data);
             return $info->update($data);
         }
         return false;

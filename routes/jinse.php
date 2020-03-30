@@ -15,16 +15,18 @@ Route::group(['prefix' => '/api'], function () {
 //    Route::get('/common/captcha', 'CommonController@getCaptcha');
     Route::post('/common/upload', 'CommonController@upload');
     Route::post('/common/send_sms', 'CommonController@sendSms');
+    Route::post('/common/check_sms', 'CommonController@checkSms');
 
     Route::post('/login/sms', 'ApiAuthController@login_sms');
-
-    //TODO 待调试
     Route::post('/login', 'ApiAuthController@login');
 
     //=============================需要登陆====================================================
     Route::group(['middleware' => ['api.user']], function () {
         Route::get('/user', 'ApiAuthController@user');
         Route::get('/logout', 'ApiAuthController@logout');
+        Route::put('/user/password', 'ApiAuthController@password');
+        Route::put('/user/phone', 'ApiAuthController@phone');
+        Route::put('/user/modify', 'ApiAuthController@modify');
 
         Route::post('/comments', 'CommentController@save');
         Route::put('/comments/{id}/zan', 'CommentController@zan');

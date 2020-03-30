@@ -16,6 +16,12 @@ class ApiAuthController extends BaseController
         return UserService::instance();
     }
 
+    /**
+     * 手机号码登录/注册
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function login_sms(Request $request)
     {
         $check = $this->_valid([
@@ -77,6 +83,11 @@ class ApiAuthController extends BaseController
         }
     }
 
+    /**
+     * 账号密码登录
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
     {
         $phoen = trim($request->input('phone'));
@@ -100,13 +111,119 @@ class ApiAuthController extends BaseController
         }
     }
 
+    /**
+     * 获取登录用户信息
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function user()
     {
         return $this->successWithResult(Auth::guard()->user());
     }
 
+    /**
+     * 退出登录
+     */
     public function logout()
     {
+//        return $this->successWithResult(Auth::guard()->user());
+    }
+
+    /**
+     * 设置密码
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function password(Request $request)
+    {
+        $user = Auth::guard()->user();
+        if (!$user) {
+            return $this->errorWithMsg("用户不存在");
+        }
+
+        $verifyCode = $request->input('verify_code', '');
+        if (empty($verifyCode)) {
+            return $this->errorWithMsg('请输入验证码');
+        }
+
+        //TODO 调试成功,暂时不需要发送短信(默认验证码为111111)
+        try {
+            if ($verifyCode != '111111') {
+                if (!SmsLogService::checkCode($user->phone, $verifyCode, 'register')) {
+                    return $this->errorWithMsg('验证码错误');
+                }
+            }
+        } catch (\Exception $e) {
+            return $this->errorWithMsg($e->getMessage());
+        }
+
+        $password = trim($request->input('password'));
+
+        if (!empty($password)) {
+            if (strlen($password) < 6 || strlen($password) > 20) {
+                return $this->errorWithMsg("密码长度为6到20位");
+            }
+            $data = [
+                'password' => $password
+            ];
+        } else {
+            return $this->errorWithMsg("请输入密码");
+        }
+
+        $result = $this->service()->update($data, $user->id);
+        if (false === $result) {
+            return $this->errorWithMsg("修改失败");
+        }
+
+
+        return $this->successWithResult($result);
+
+    }
+
+    /**
+     * 更改手机
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function phone(Request $request)
+    {
+        $user = Auth::guard()->user();
+        if (!$user) {
+            return $this->errorWithMsg("用户不存在");
+        }
+
+        $verifyCode = $request->input('verify_code', '');
+        if (empty($verifyCode)) {
+            return $this->errorWithMsg('请输入验证码');
+        }
+
+        //TODO 调试成功,暂时不需要发送短信(默认验证码为111111)
+        try {
+            if ($verifyCode != '111111') {
+                if (!SmsLogService::checkCode($user->phone, $verifyCode, 'register')) {
+                    return $this->errorWithMsg('验证码错误');
+                }
+            }
+        } catch (\Exception $e) {
+            return $this->errorWithMsg($e->getMessage());
+        }
+
+        $phoen = trim($request->input('phone'));
+
+        if (!empty($phoen)) {
+            $data = [
+                'phone' => $phoen
+            ];
+        } else {
+            return $this->errorWithMsg("请输入手机号码");
+        }
+
+        $result = $this->service()->update($data, $user->id);
+        if (false === $result) {
+            return $this->errorWithMsg("修改失败");
+        }
+
+
+        return $this->successWithResult($result);
 
     }
 

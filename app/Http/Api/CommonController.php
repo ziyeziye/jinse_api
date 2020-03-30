@@ -102,4 +102,25 @@ class CommonController extends BaseController
         }
     }
 
+    public function checkSms(Request $request)
+    {
+        $verifyCode = $request->input('verify_code', '');
+        $phone = $request->input('phone', '');
+        if (empty($verifyCode)) {
+            return $this->errorWithMsg('请输入验证码');
+        }
+
+        //TODO 调试成功,暂时不需要发送短信(默认验证码为111111)
+        try {
+            if ($verifyCode != '111111') {
+                if (!SmsLogService::checkCode($phone, $verifyCode, 'register')) {
+                    return $this->errorWithMsg('验证码错误');
+                }
+            }
+            return $this->successWithResult(true);
+        } catch (\Exception $e) {
+            return $this->errorWithMsg($e->getMessage());
+        }
+    }
+
 }

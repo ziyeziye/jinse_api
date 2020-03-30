@@ -130,7 +130,19 @@ class CoinController extends BaseController
             'Referer: https://m.feixiaohao.com',
         ];
         $result = curlGet($url, $data, $header, true);
-        return $this->successWithResult(json_decode($result));
+        $result = json_decode($result, true);
+        if (isset($result['data']) && isset($result['data']['markets']) && !empty($result['data']['markets'])) {
+            //查询是否已点赞
+            $userID = Auth::guard('api')->user()->id;
+            foreach ($result['data']['markets'] as $key=>$market) {
+                $result['data']['markets'][$key]['is_follow'] = UserCoins::where([
+                    'user_id' => $userID,
+                    'coin_code' => $market['coin_code'],
+                ])->exists();
+            }
+        }
+
+        return $this->successWithResult($result);
     }
 
     /**

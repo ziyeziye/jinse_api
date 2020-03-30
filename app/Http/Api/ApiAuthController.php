@@ -77,9 +77,27 @@ class ApiAuthController extends BaseController
         }
     }
 
-    public function login()
+    public function login(Request $request)
     {
+        $phoen = trim($request->input('phone'));
+        $password = trim($request->input('password'));
 
+        try {
+            $userService = new UserService();
+            $user = $userService->login($phoen,$password);
+            if ($user) {
+                //原h5登录流程
+                session(["user_effective_{$user->id}" => time() + 3600]);
+                session(['user' => $user]);
+
+                //app api登录 默认记住我
+                return $this->successWithResult(['user_id' => $user->id, 'api_token' => $user->generateToken(3600, true)]);
+            } else {
+                return $this->errorWithMsg("登录失败");
+            }
+        } catch (\exception $exception) {
+            return $this->errorWithMsg($exception->getMessage());
+        }
     }
 
     public function user()

@@ -40,8 +40,22 @@ class SearchService extends BaseService
         }]);
 
         $param['fields'] = [
-            'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
+            'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad','content'
         ];
+
+        if (isset($param['keyword'])) {
+            $keyword = trim(strip_tags($param['keyword']));
+            if (empty($keyword)) {
+                $query = $query->whereRaw('1=0');
+            }else{
+                $keyword = strip_tags($param['keyword']);
+                $query = $query->where(function ($query) use($keyword){
+                    $query->orWhere('name', 'like', "%{$keyword}%");
+                    $query->orWhere('content', 'like', "%{$keyword}%");
+                });
+            }
+        }
+
 //        $query->with("category");
         $query->withCount('comments');
         return self::ModelSearch($query, $param, $page, $size);

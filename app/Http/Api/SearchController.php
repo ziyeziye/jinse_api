@@ -2,6 +2,7 @@
 
 namespace App\Http\Api;
 
+use App\Services\SearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,7 +15,7 @@ class SearchController extends BaseController
         $page = $request->exists("pageNum") ? get_page() : [null];
         $where = request()->input();
         $where['order_by'] = ["order" => "number", "desc" => "desc"];
-        $result = ArticleService::table($where, ...$page);
+        $result = SearchService::table($where, ...$page);
         return $this->successWithResult($result);
     }
 

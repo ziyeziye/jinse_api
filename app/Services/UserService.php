@@ -113,6 +113,41 @@ class UserService extends BaseService
         }
     }
 
+    /**
+     * 用户登录
+     * @param $phone
+     * @param $encrypt_password
+     * @param $username
+     * @return mixed
+     * @throws exception
+     */
+    public function login($phone, $encrypt_password, $username=false)
+    {
+        $user = false;
+        if (!empty($phone)) {
+            $user = User::where('phone', $phone)->first();
+        }else if(!empty($username)){
+            $user = User::where('username', $username)->first();
+        }
+
+        if (empty($user)) {
+            throw new exception("用户不存在", 102);
+        }
+
+        if ($user->status != 1) {
+            throw new exception("用户已禁用", 105);
+        }
+
+        $hash_password = new Password();
+        $hash_password_str = User::HashPassword($user->prefix, $user->username, $encrypt_password, $user->salt);
+        $encrypt_hash_password = $hash_password->where('password', $hash_password_str)->count();
+
+        if (!$encrypt_hash_password) {
+            throw new exception("密码错误", 103);
+        }
+        return $user;
+    }
+
     public static function update($data, $id)
     {
         $info = self::$model->find($id);
@@ -231,6 +266,18 @@ class UserService extends BaseService
     public static function authors($param = [], int $page = null, int $size = 15)
     {
         $query = self::$model->query();
+        if (isset($param['keyword'])) {
+            $keyword = trim(strip_tags($param['keyword']));
+            if (empty($keyword)) {
+                $query = $query->whereRaw('1=0');
+            }else {
+                $query = $query->where(function ($query) use ($keyword) {
+                    $query->orWhere('username', 'like', "%{$keyword}%");
+                    $query->orWhere('nickname', 'like', "%{$keyword}%");
+                });
+            }
+        }
+
         return self::ModelSearch($query, ['fields'=>['id','username','nickname','avatar']], $page, $size);
     }
 

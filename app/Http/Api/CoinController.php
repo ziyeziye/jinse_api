@@ -144,6 +144,7 @@ class CoinController extends BaseController
                     $result['data']['markets'][$key]['is_follow'] = UserCoins::where([
                         'user_id' => $userID,
                         'coin_code' => $market['coin_code'],
+                        'exchange_code' => $market['exchange_code'],
                     ])->exists();
                 }
             }
@@ -174,5 +175,51 @@ class CoinController extends BaseController
         ];
         $result = curlGet($url, $data, $header, true);
         return $this->successWithResult(json_decode($result));
+    }
+
+    /**
+     * 搜索货币/交易所
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $url = 'https://dncapi.bqiapp.com/api/search/websearch';
+        $data = [
+            "page" => $request->input('pageNum', 1),
+            "exchange_page" => $request->input('exchangePage', 1),
+            "wallet_page" => $request->input('walletPage', 1),
+            "pagesize" => $request->input('pageSize', 50),
+            "code" => $request->input('keyword', ''),
+            "webp" => 1,
+            "token" => '',
+        ];
+
+        $header = [
+            'Host: mdncapi.bqiapp.com',
+            'Origin: https://m.feixiaohao.com',
+            'Referer: https://m.feixiaohao.com',
+        ];
+        $result = curlGet($url, $data, $header, true);
+        $result = json_decode($result, true);
+//        if (isset($result['data']) && isset($result['data']['markets']) && !empty($result['data']['markets'])) {
+//            //查询是否已点赞
+//            $user = Auth::guard('api')->user();
+//            $userID = false;
+//            if ($user) {
+//                $userID = $user->id;
+//            }
+//            foreach ($result['data']['markets'] as $key=>$market) {
+//                $result['data']['markets'][$key]['is_follow'] = false;
+//                if ($user) {
+//                    $result['data']['markets'][$key]['is_follow'] = UserCoins::where([
+//                        'user_id' => $userID,
+//                        'coin_code' => $market['coin_code'],
+//                    ])->exists();
+//                }
+//            }
+//        }
+
+        return $this->successWithResult($result);
     }
 }

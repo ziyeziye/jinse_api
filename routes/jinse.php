@@ -61,11 +61,14 @@ Route::group(['prefix' => '/api'], function () {
     // 行情列表-涨跌幅榜
     Route::get('/coins/maxchange', 'CoinController@maxchange');
 
+    Route::get('/search/coins', 'CoinController@search');
+    Route::get('/search/search', 'SearchController@search');
+
+
+
     Route::get('/coins/{code}/markets', 'CoinController@markets');
     Route::get('/coins/{code}/kline', 'CoinController@kline');
     Route::get('/coins/{code}', 'CoinController@info');
-
-
 
     Route::get('/tags', 'TagController@table');
 
@@ -80,19 +83,10 @@ Route::group(['prefix' => '/api'], function () {
     Route::get('/tabbars', 'CategoryController@tabbars');
     Route::get('/banners', 'BannerController@table');
 
+    Route::get('/hot_words', 'HotWordController@table');
 
 
     //TODO 待调试
-
-//    Route::get('/tags', 'TagController@table');
-//    Route::get('/tags/{id}', 'TagController@info');
-//
-//    Route::get('/hot_words', 'HotWordController@table');
-//    Route::get('/hot_words/{id}', 'HotWordController@info');
-//
-//    Route::get('/articles/{id}', 'ArticleController@info');
-//
-//
 //    Route::get('/subjects', 'SubjectController@table');
 //    Route::get('/subjects/{id}/articles', 'SubjectController@articles');
 //    Route::get('/subjects/{id}', 'SubjectController@info');

@@ -30,11 +30,9 @@ class CollectionService extends BaseService
         }else{
             $query = $query->whereRaw('0=1');
         }
-        $query = $query->rightJoin('collections', 'article_id', '=', 'articles.id')
-            ->select(
-                'articles.id', 'articles.name','articles.type','articles.user_id',
-                'articles.img', 'articles.video','collections.create_time', 'collections.update_time'
-            );
+        $query = $query->rightJoin('collections', 'article_id', '=', 'articles.id');
+        $param['fields'] = ['articles.id', 'articles.name','articles.type','articles.user_id',
+            'articles.img', 'articles.video','collections.create_time', 'collections.update_time'];
         $query = $query->with(['author' => function ($query) {
             $query->select('id', 'username', 'nickname', 'avatar');
         }]);

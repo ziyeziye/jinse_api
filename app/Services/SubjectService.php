@@ -46,8 +46,7 @@ class SubjectService extends BaseService
             return self::ModelSearch($query->whereRaw('1=0'), $param, $page, $size);
         }
         $query->rightJoin('subject_articles', 'article_id', '=', 'articles.id')
-            ->where("subject_id", $param["subject_id"])
-            ->select('articles.*', 'subject_articles.id', 'subject_articles.create_time');
+            ->where("subject_id", $param["subject_id"]);
 
         if (isset($param['name']) && !empty($param['name'])) {
             $query = $query->where("name", "like", "%{$param['name']}%");
@@ -56,6 +55,8 @@ class SubjectService extends BaseService
             $query = $query->whereIn("articles.id", $ids);
         }
         $query->with("author");
+
+        $param['fields'] = ['articles.*', 'subject_articles.id', 'subject_articles.create_time'];
 //        $query->with("category");
         return self::ModelSearch($query, $param, $page, $size);
     }

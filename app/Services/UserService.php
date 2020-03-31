@@ -238,11 +238,8 @@ class UserService extends BaseService
         }else{
             $query = $query->whereRaw('0=1');
         }
-        $query = $query->rightJoin('follows', 'moment_id', '=', 'users.id')
-            ->select(
-                'users.id', 'users.username','users.nickname','users.avatar'
-            );
-
+        $query = $query->rightJoin('follows', 'moment_id', '=', 'users.id');
+        $param['fields'] = ['users.id', 'users.username','users.nickname','users.avatar'];
         $param['order_by'] = ['order' => 'follows.create_time', 'desc' => 'desc'];
         return self::ModelSearch($query, $param, $page, $size);
     }
@@ -256,13 +253,11 @@ class UserService extends BaseService
         }else{
             $query = $query->whereRaw('0=1');
         }
-        $query = $query->rightJoin('follows', 'user_id', '=', 'users.id')
-            ->select(
-                'users.id', 'users.username','users.nickname','users.avatar'
-            );
+        $query = $query->rightJoin('follows', 'user_id', '=', 'users.id');
 
+        $param['fields'] = ['users.id', 'users.username','users.nickname','users.avatar'];
         $param['order_by'] = ['order' => 'follows.create_time', 'desc' => 'desc'];
-        return self::ModelSearch($query, [], $page, $size);
+        return self::ModelSearch($query, $param, $page, $size);
     }
 
     public static function authors($param = [], int $page = null, int $size = 15)
@@ -307,6 +302,11 @@ class UserService extends BaseService
             return false;
         }
         return false;
+    }
+
+    public static function getUser($id,$fields = ['*'])
+    {
+        return self::$model->select($fields)->find($id);
     }
 
 }

@@ -174,4 +174,10 @@ class UserController extends BaseController
         return $this->successWithResult($result);
     }
 
+    public function getUser(Request $request, $id)
+    {
+        $result = $this->service()->getUser($id, ['id','data','nickname','avatar']);
+        return $this->successWithResult($result);
+    }
+
 }

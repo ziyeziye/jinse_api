@@ -83,6 +83,7 @@ Route::group(['prefix' => '/api'], function () {
 
     Route::get('/tags', 'TagController@table');
     Route::get('/users/authors', 'UserController@authors');
+    Route::get('/users/{id}', 'UserController@getUser');
     Route::get('/articles/top', 'ArticleController@top');
     Route::get('/articles', 'ArticleController@table');
     Route::get('/comments/{id}/comment', 'CommentController@info_comments');

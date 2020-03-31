@@ -297,7 +297,7 @@ class CoinController extends BaseController
             'Content-Type: application/json; charset=utf-8',
             'Accept: application/json, text/plain, */*'
         ];
-        $result = curlPost($url, $data, $header, true);
+        $result = curlPost($url, json_encode($data), $header, true);
         return $this->successWithResult(json_decode($result));
     }
 

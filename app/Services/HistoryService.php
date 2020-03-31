@@ -30,11 +30,9 @@ class HistoryService extends BaseService
         }else{
             $query = $query->whereRaw('0=1');
         }
-        $query = $query->rightJoin('histories', 'article_id', '=', 'articles.id')
-            ->select(
-                'articles.id', 'articles.name','articles.type','articles.user_id',
-                'articles.img', 'articles.video','histories.create_time', 'histories.update_time'
-            );
+        $query = $query->rightJoin('histories', 'article_id', '=', 'articles.id');
+        $param['fields'] = ['articles.id', 'articles.name','articles.type','articles.user_id',
+            'articles.img', 'articles.video','histories.create_time', 'histories.update_time'];
         $query = $query->with(['author' => function ($query) {
             $query->select('id', 'username', 'nickname', 'avatar');
         }]);

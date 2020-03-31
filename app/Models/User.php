@@ -69,7 +69,7 @@ class User extends Model
         'avatar_src',
         'status_name',
         'verify_name',
-        'invite_user',
+//        'invite_user',
         'verify_status',
         'is_follow',
         'follows_count',

@@ -174,7 +174,9 @@ class UserService extends BaseService
                 }
             }
             $info->update($data);
-            return $info->update($data);
+            if ($info->update($data)) {
+                return $info;
+            }
         }
         return false;
     }

@@ -16,7 +16,8 @@ class User extends Authenticatable
     protected $casts = [
         'verify_id' => 'int',
         'invite_uid' => 'int',
-        'status' => 'int'
+        'status' => 'int',
+        'data' => 'array'
     ];
 
     protected $hidden = [

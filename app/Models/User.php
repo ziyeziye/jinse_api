@@ -41,7 +41,8 @@ class User extends Model
     protected $casts = [
         'verify_id' => 'int',
         'invite_uid' => 'int',
-        'status' => 'int'
+        'status' => 'int',
+        'data' => 'array'
     ];
 
     protected $hidden = [

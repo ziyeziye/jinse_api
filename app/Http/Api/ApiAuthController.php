@@ -227,4 +227,45 @@ class ApiAuthController extends BaseController
 
     }
 
+    /**
+     * 修改用户资料
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function modify(Request $request)
+    {
+        $user = Auth::guard()->user();
+        if (!$user) {
+            return $this->errorWithMsg("请先登录");
+        }
+
+//        nickname: "紫夜"
+//        sex: "保密"
+//        job: "程序员"
+//        introduce: "哈哈哈"
+//        phone: "13996609880"
+//        wx_no: "ziyeziye"
+//        wx_official: "ziyeofficial"
+//        twitter_no: "tw"
+//        email: "547562496@qq.com"
+
+        $data = [];
+        if ($request->exists('nickname')) {
+            $data['nickname'] = $request->input('nickname');
+        }
+        if ($request->exists('avatar')) {
+            $data['avatar'] = $request->input('avatar');
+        }
+        if ($request->exists('data')) {
+            $data['data'] = $request->input('data');
+        }
+
+        $result = $this->service()->update($data, $user->id);
+        if (false === $result) {
+            return $this->errorWithMsg("修改失败");
+        }
+
+        return $this->successWithResult($result);
+
+    }
 }

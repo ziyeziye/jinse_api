@@ -35,7 +35,7 @@ class ArticleService extends BaseService
             $query = $query->where("name", "like", "%{$param['name']}%");
         }
         if (isset($param['type']) && !empty($param['type'])) {
-            $type = is_array($param['type'])?:explode(',', $param['type']);
+            $type = is_array($param['type'])?$param['type']:explode(',', $param['type']);
             if ($param['type']==2) {
                 $param['fields'][] = 'content';
             }

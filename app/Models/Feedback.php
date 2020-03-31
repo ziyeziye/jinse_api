@@ -34,14 +34,14 @@ class Feedback extends Model
 	];
 
     protected $appends = [
-        "type_name"
+        'type_name'
     ];
 
     public function getTypeNameAttribute()
     {
         $type = $this->type;
-        $types = ["默认","图片", "文章", "活动"];
-        return isset($types[$type]) ? $types[$type] : "";
+        $types = ['功能建议','体验建议', '内容建议', '其他'];
+        return $types[$type] ?? '其他';
     }
 
 	protected $dates = [
@@ -58,4 +58,9 @@ class Feedback extends Model
 		'create_time',
 		'update_time'
 	];
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User', 'user_id');
+    }
 }

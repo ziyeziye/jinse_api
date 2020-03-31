@@ -58,36 +58,41 @@ Route::group(['prefix' => '/api'], function () {
 
     //=============================不需要登陆====================================================
 
+    // 搜索资讯
+    Route::get('/search/search', 'SearchController@search');
+    // 搜索货币/交易所
+    Route::get('/search/coins', 'CoinController@search');
     // 行情列表-市值榜
     Route::get('/coins/coinrank', 'CoinController@coinrank');
-    // 行情列表-涨跌幅榜
+    // 涨跌幅榜
     Route::get('/coins/maxchange', 'CoinController@maxchange');
-
-    Route::get('/search/coins', 'CoinController@search');
-    Route::get('/search/search', 'SearchController@search');
-
-
-
+    // 市场交易对
     Route::get('/coins/{code}/markets', 'CoinController@markets');
+    // 全球均线
     Route::get('/coins/{code}/kline', 'CoinController@kline');
+    // 货币详情
     Route::get('/coins/{code}', 'CoinController@info');
+    // 交易所详情
+    Route::get('/coins/exchange/{code}', 'CoinController@exchange_info');
+    // 交易所公告
+    Route::get('/coins/exchange/{code}/news', 'CoinController@exchange_news');
+    // 交易所支持的交易对
+    Route::get('/coins/exchange/{code}/markets', 'CoinController@exchange_markets');
+
+
 
     Route::get('/tags', 'TagController@table');
-
     Route::get('/users/authors', 'UserController@authors');
-
     Route::get('/articles/top', 'ArticleController@top');
     Route::get('/articles', 'ArticleController@table');
     Route::get('/comments/{id}/comment', 'CommentController@info_comments');
     Route::get('/articles/{id}/comments', 'CommentController@articleComments');
     Route::get('/articles/{id}', 'ArticleController@info');
-
     Route::get('/tabbars', 'CategoryController@tabbars');
     Route::get('/banners', 'BannerController@table');
-
     Route::get('/hot_words', 'HotWordController@table');
-
     Route::get('/pages/{type}', 'PageController@pageType');
+    Route::post('/feedbacks', 'FeedbackController@save');
 
     //TODO 待调试
 //    Route::get('/subjects', 'SubjectController@table');

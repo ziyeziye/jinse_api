@@ -139,7 +139,7 @@ class CoinController extends BaseController
             if ($user) {
                 $userID = $user->id;
             }
-            foreach ($result['data']['markets'] as $key=>$market) {
+            foreach ($result['data']['markets'] as $key => $market) {
                 $result['data']['markets'][$key]['is_follow'] = false;
                 if ($user) {
                     $result['data']['markets'][$key]['is_follow'] = UserCoins::where([
@@ -223,4 +223,83 @@ class CoinController extends BaseController
 
         return $this->successWithResult($result);
     }
+
+    /**
+     * 交易所详情
+     * @param Request $request
+     * @param $code
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function exchange_info(Request $request, $code)
+    {
+        $url = 'https://dncapi.bqiapp.com/api/exchange/web-exchangeinfo';
+        $data = [
+            "code" => $code,
+            "webp" => 1,
+            'token' => ''
+        ];
+
+        $header = [
+            'Host: mdncapi.bqiapp.com',
+            'Origin: https://m.feixiaohao.com',
+            'Referer: https://m.feixiaohao.com',
+        ];
+        $result = curlGet($url, $data, $header, true);
+        return $this->successWithResult(json_decode($result));
+    }
+
+    /**
+     * 交易所公告
+     * @param Request $request
+     * @param $code
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function exchange_news(Request $request, $code)
+    {
+        $url = 'https://dncapi.bqiapp.com/api/v3/exchange/news';
+        $data = [
+            "page" => $request->input('pageNum', 1),
+            "per_page" => $request->input('pageSize', 15),
+            "exchangecode" => $code,
+            "webp" => 1,
+        ];
+
+        $header = [
+            'Host: mdncapi.bqiapp.com',
+            'Origin: https://m.feixiaohao.com',
+            'Referer: https://m.feixiaohao.com',
+        ];
+        $result = curlGet($url, $data, $header, true);
+        return $this->successWithResult(json_decode($result));
+    }
+
+
+    /**
+     * 交易所交易对行情列表
+     * @param Request $request
+     * @param $code
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function exchange_markets(Request $request, $code)
+    {
+        $url = 'https://dncapi.bqiapp.com/api/exchange/coinpair_list';
+        $data = [
+            "page" => $request->input('pageNum', 1),
+            "pagesize" => $request->input('pageSize', 50),
+            "code" => $code,
+            "webp" => 1,
+        ];
+
+        $header = [
+            'Host: mdncapi.bqiapp.com',
+            'Origin: https://m.feixiaohao.com',
+            'Referer: https://m.feixiaohao.com',
+            'Content-Type: application/json; charset=utf-8',
+            'Accept: application/json, text/plain, */*'
+        ];
+        $result = curlPost($url, $data, $header, true);
+        return $this->successWithResult(json_decode($result));
+    }
+
+
 }

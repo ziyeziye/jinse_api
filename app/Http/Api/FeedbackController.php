@@ -4,6 +4,7 @@ namespace App\Http\Api;
 
 use App\Services\FeedbackService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends BaseController
 {
@@ -33,11 +34,15 @@ class FeedbackController extends BaseController
     {
         //验证参数
         $check = $this->_valid([
-            'name' => 'required',
-            'img' => 'required',
+            'type' => 'required',
+            'content' => 'required',
+            'nick_name' => 'required',
+            'contact' => 'required',
         ], [
-            'name.required' => '请输入名称',
-            'img.required' => '请上传图标',
+            'type.required' => '请选择反馈类型',
+            'content.required' => '请输入内容',
+            'nick_name.required' => '请输入联系人',
+            'contact.required' => '请输入联系方式',
         ]);
 
         if (true !== $check) {
@@ -50,10 +55,17 @@ class FeedbackController extends BaseController
     {
         $this->valid();
         $data = [
-            "name" => $request->input("name"),
-            "img" => $request->input("img"),
-            "href" => $request->input("href"),
+            "type" => $request->input("type"),
+            "content" => $request->input("content"),
+            "nick_name" => $request->input("nick_name"),
+            "contact" => $request->input("contact"),
+            "user_id" => 0,
         ];
+
+        $user = Auth::guard('api')->user();
+        if ($user) {
+            $data['user_id'] = $user->id;
+        }
 
         $result = $this->service()->save($data);
         return $this->successWithResult($result);

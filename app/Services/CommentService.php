@@ -117,7 +117,7 @@ class CommentService extends BaseService
         return $info;
     }
 
-    public static function info_comments($id, $param = [], int $page = null, int $size = 15)
+    public function info_comments($id, $param = [], int $page = null, int $size = 15)
     {
         $info = self::$model->with(['user' => function ($query) {
             $query->select('id', 'username', 'nickname', 'avatar');
@@ -141,4 +141,47 @@ class CommentService extends BaseService
         $list['info'] = $info;
         return $list;
     }
+
+    public function reply_msg($userId, int $page = null, int $size = 15)
+    {
+        $query = self::$model->query();
+        if ($userId>0) {
+            $query->where('reply_user_id', $userId)
+            ->where('user_id','!=', $userId);
+        } else {
+            $query = $query->whereRaw('0=1');
+            return self::ModelSearch($query, [], $page, $size);
+        }
+
+        $query = $query->with(['user' => function ($query) {
+            $query->select('id', 'username', 'nickname', 'avatar');
+        }]);
+
+        $param['order_by'] = ["order" => "create_time", "desc" => "desc"];
+        return self::ModelSearch($query, $param, $page, $size)->toArray();
+    }
+
+    public function zan_msg($userId, int $page = null, int $size = 15)
+    {
+        $query = Zan::query();
+        if ($userId>0) {
+            $query->where('comments.user_id', $userId)
+                ->where('type', 'comment');
+        } else {
+            $query = $query->whereRaw('0=1');
+            return self::ModelSearch($query, [], $page, $size);
+        }
+
+        $query = $query->rightJoin('comments', 'moment_id', '=', 'comments.id');
+
+        $query = $query->with(['user' => function ($query) {
+            $query->select('id', 'username', 'nickname', 'avatar');
+        }]);
+
+        $param['fields'] = ['comments.*', 'comments.user_id as comment_user_id','zans.create_time','zans.user_id'];
+        $param['order_by'] = ["order" => "zans.create_time", "desc" => "desc"];
+        return self::ModelSearch($query, $param, $page, $size)->toArray();
+    }
+
+
 }

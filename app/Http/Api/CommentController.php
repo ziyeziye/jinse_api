@@ -112,7 +112,7 @@ class CommentController extends BaseController
         $userID = Auth::guard()->user()->id;
         $result = $this->service()->zan($id,$userID);
         if (false === $result) {
-            return $this->errorWithMsg('修改失败');
+            return $this->errorWithMsg('点赞失败');
         }
         return $this->successWithResult($result);
     }
@@ -124,6 +124,22 @@ class CommentController extends BaseController
         $where = request()->input();
         $where['order_by'] = ["order" => "zan", "desc" => "desc"];
         $result = $this->service()->info_comments($id, $where, ...$page);
+        return $this->successWithResult($result);
+    }
+
+    public function reply_msg(Request $request)
+    {
+        $userID = Auth::guard()->user()->id;
+        $page = $request->exists('pageNum') ? get_page() : [null];
+        $result = $this->service()->reply_msg($userID, ...$page);
+        return $this->successWithResult($result);
+    }
+
+    public function zan_msg(Request $request)
+    {
+        $userID = Auth::guard()->user()->id;
+        $page = $request->exists('pageNum') ? get_page() : [null];
+        $result = $this->service()->zan_msg($userID, ...$page);
         return $this->successWithResult($result);
     }
 

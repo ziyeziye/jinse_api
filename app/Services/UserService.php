@@ -255,7 +255,7 @@ class UserService extends BaseService
         }
         $query = $query->rightJoin('follows', 'user_id', '=', 'users.id');
 
-        $param['fields'] = ['users.id', 'users.username','users.nickname','users.avatar'];
+        $param['fields'] = ['users.id', 'users.username','users.nickname','users.avatar', 'follows.create_time'];
         $param['order_by'] = ['order' => 'follows.create_time', 'desc' => 'desc'];
         return self::ModelSearch($query, $param, $page, $size);
     }

@@ -302,4 +302,60 @@ class CoinController extends BaseController
     }
 
 
+    protected function sha512($data, $rawOutput = false)
+    {
+        if (!is_scalar($data)) {
+            return false;
+        }
+        $data = (string)$data;
+        $rawOutput = !!$rawOutput;
+        return hash('sha512', $data, $rawOutput);
+    }
+
+    public function bkb_articles()
+    {
+//        测试地址：http://api-qa.beekuaibao.com/thirdparty/getOpenData/V2
+//        ⽣产地址：https://api.beekuaibao.com/thirdparty/getOpenData/V2
+//        请求头：ContentType为APPLICATION/JSON
+//        请求⽅式：post
+//        请求参数：json对象，格式如下：
+//        {
+//            "channel":"xxxxxx",//渠道，由bitwires提供
+//            "sign":"F4C51711AAA195C1794E93D6E3E4C415F0126236EA0318AB1B6D3AA777B3B3A96E7A86F6FCAACCD1870B
+//            E018A1F9464F39BBA27800F544380FDD3F7835DD0",// 签名，SHA512(key+data内的字符串（包含⼤括号）)
+//            "data":{//注意：data中的字段要严格按照此顺序
+//            "businessNo":"B100000",//业务编号,快讯业务编号为B100000,资讯业务编号为B100001
+//                "tag":"recommend",//资讯标签，可传””。可选值为：recommend(推荐 ) 、dailyMarket（每⽇⾏情）、//beeMystery（币圈秘事）、noviceRead（新⼿必读）;
+//                "requestId":"12345678",//每次请求的唯⼀号，字符串⻓度⼩于64
+//                "id":""//第⼀次请求传””，获取最新发布的10条数据（按照发布时间倒序排列），//如果还想获取这10条数据发布前的数据，则传⼊第10条的id，依次类推；如果想获取最新的数据，则继续传””。//建议5分钟调⽤⼀次，每次都传””
+//             }
+//         }
+        //key bkb88888888,channel swft
+        //cs
+        $url = 'http://api-qa.beekuaibao.com/thirdparty/getOpenData/V2';
+//        $url = 'https://api.beekuaibao.com/thirdparty/getOpenData/V2';
+        $header = [
+            'Content-Type: application/json; charset=utf-8',
+            'Accept: application/json, text/plain, */*'
+        ];
+        $key = "bkb88888888";
+        $data = [
+            "businessNo" => "B100001",
+            "tag" => "dailyMarket",
+            "requestId" => "12345678",
+            "id" => "",
+        ];
+        $json = json_encode($data);
+        $sign = $this->sha512($key . $json);
+        $param = [
+            "channel" => 'cherry',
+            "sign" => $sign,
+            "data" => $data,
+        ];
+
+        $result = curlPost($url, json_encode($param), $header, true);
+        return $this->successWithResult(json_decode($result));
+    }
+
+
 }

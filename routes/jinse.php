@@ -135,5 +135,6 @@ Route::group(['prefix' => '/api'], function () {
 
     //=====================================货币相关接口end=========================================
 
+    Route::get('/bkb_articles', 'CoinController@bkb_articles');
 
 });

@@ -383,3 +383,18 @@ function curlPost($url, $params = [], $header = [], $https = false)
     return $response;
 }
 
+/**
+ * sha512加密算法
+ * @param $data
+ * @param bool $rawOutput
+ * @return bool|string
+ */
+function sha512($data, $rawOutput = false)
+{
+    if (!is_scalar($data)) {
+        return false;
+    }
+    $data = (string)$data;
+    $rawOutput = !!$rawOutput;
+    return hash('sha512', $data, $rawOutput);
+}

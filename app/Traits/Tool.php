@@ -61,10 +61,11 @@ trait Tool
         return response()->json($data, 200);
     }
 
-    public function errorWithMsg($msg = 'error', $code = 404)
+    public function errorWithMsg($msg = 'error', $result=[], $code = 404)
     {
         $data = [
             'msg' => $msg,
+            'result' => $result,
             'code' => $code
         ];
         $this->writeLog($data);

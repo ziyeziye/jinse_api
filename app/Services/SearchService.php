@@ -35,6 +35,9 @@ class SearchService extends BaseService
         if (isset($param['category_id']) && !empty($param['category_id'])) {
             $query = $query->where("category_id", $param['category_id']);
         }
+        if (isset($param['user_id']) && !empty($param['user_id'])) {
+            $query = $query->where("user_id", $param['user_id']);
+        }
         $query->with(['author' => function ($query) {
             $query->select('id', 'username', 'nickname', 'avatar');
         }]);
@@ -48,11 +51,16 @@ class SearchService extends BaseService
             if (empty($keyword)) {
                 $query = $query->whereRaw('1=0');
             }else{
-                $keyword = strip_tags($param['keyword']);
-                $query = $query->where(function ($query) use($keyword){
-                    $query->orWhere('name', 'like', "%{$keyword}%");
-                    $query->orWhere('content', 'like', "%{$keyword}%");
-                });
+                $wordLen = mb_strlen($keyword);
+                if ($wordLen > 38) {
+                    $query = $query->whereRaw('1=0');
+                }else{
+                    $keyword = strip_tags($param['keyword']);
+                    $query = $query->where(function ($query) use($keyword){
+                        $query->orWhere('name', 'like', "%{$keyword}%");
+                        $query->orWhere('content', 'like', "%{$keyword}%");
+                    });
+                }
             }
         }
 

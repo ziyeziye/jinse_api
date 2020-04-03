@@ -20,7 +20,7 @@ class ArticleController extends BaseController
         //获取数据
         $page = $request->exists("pageNum") ? get_page() : [null];
         $where = request()->input();
-        $where['order_by'] = ["order" => "id", "desc" => "desc"];
+        $where['order_by'] = ["order" => "update_time", "desc" => "desc"];
         $result = $this->service()->table($where, ...$page);
         return $this->successWithResult($result);
     }
@@ -146,7 +146,7 @@ class ArticleController extends BaseController
         $where = request()->input();
         $userID = Auth::guard()->user()->id;
         $where['user_id'] = $userID;
-        $where['order_by'] = ["order" => "id", "desc" => "desc"];
+        $where['order_by'] = ["order" => "update_time", "desc" => "desc"];
         $result = $this->service()->follow_author($where, ...$page);
         return $this->successWithResult($result);
     }
@@ -158,7 +158,7 @@ class ArticleController extends BaseController
         $where = request()->input();
         $userID = Auth::guard()->user()->id;
         $where['user_id'] = $userID;
-        $where['order_by'] = ["order" => "id", "desc" => "desc"];
+        $where['order_by'] = ["order" => "update_time", "desc" => "desc"];
         $result = $this->service()->follow_tag($where, ...$page);
         return $this->successWithResult($result);
     }
@@ -169,7 +169,7 @@ class ArticleController extends BaseController
         $page = $request->exists("pageNum") ? get_page() : [null];
         $where = request()->input();
         $where['type'] = [1,2];
-        $where['order_by'] = ["order" => "id", "desc" => "desc"];
+        $where['order_by'] = ["order" => "update_time", "desc" => "desc"];
         $result = $this->service()->table($where, ...$page);
         return $this->successWithResult($result);
     }

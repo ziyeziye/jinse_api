@@ -14,7 +14,7 @@ class SearchController extends BaseController
         //获取数据
         $page = $request->exists("pageNum") ? get_page() : [null];
         $where = request()->input();
-        $where['order_by'] = ["order" => "number", "desc" => "desc"];
+        $where['order_by'] = ["order" => "update_time", "desc" => "desc"];
         $result = SearchService::table($where, ...$page);
         return $this->successWithResult($result);
     }

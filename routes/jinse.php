@@ -75,6 +75,8 @@ Route::group(['prefix' => '/api'], function () {
         Route::put('/tags/{id}/follow', 'TagController@follow_add');
         //系统公告
         Route::get('/notices', 'NoticeController@table');
+        //标签详情页
+        Route::get('/tags/{id}', 'TagController@info');
 
 
 

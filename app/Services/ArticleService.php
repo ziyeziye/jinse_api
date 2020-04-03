@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Article;
 use App\Models\Collection;
 use App\Models\Follow;
+use App\Models\Tag;
 use App\Models\Zan;
 use Illuminate\Support\Facades\DB;
 
@@ -29,14 +30,14 @@ class ArticleService extends BaseService
     {
         $query = self::$model->query();
         $param['fields'] = [
-            'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
+            'id', 'name', 'number', 'tags', 'type', 'create_time', 'img', 'update_time', 'user_id', 'good', 'bad'
         ];
         if (isset($param['name']) && !empty($param['name'])) {
             $query = $query->where("name", "like", "%{$param['name']}%");
         }
         if (isset($param['type']) && !empty($param['type'])) {
-            $type = is_array($param['type'])?$param['type']:explode(',', $param['type']);
-            if ($param['type']==2) {
+            $type = is_array($param['type']) ? $param['type'] : explode(',', $param['type']);
+            if ($param['type'] == 2) {
                 $param['fields'][] = 'content';
             }
             $query = $query->whereIn("type", $type);
@@ -153,10 +154,10 @@ class ArticleService extends BaseService
                 //        $query->withCount('comments');
 
                 $param['fields'] = [
-                    'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
+                    'id', 'name', 'number', 'tags', 'type', 'create_time', 'img', 'update_time', 'user_id', 'good', 'bad'
                 ];
                 $query = $query->whereIn('user_id', $userIds)
-                ->whereIn('type',[1,3]);
+                    ->whereIn('type', [1, 3]);
                 return self::ModelSearch($query, $param, $page, $size);
             }
         }
@@ -168,27 +169,33 @@ class ArticleService extends BaseService
     public static function follow_tag($param = [], int $page = null, int $size = 15)
     {
         $query = self::$model->query();
-        $userIds = [];
-//        if (isset($param['user_id']) && !empty($param['user_id'])) {
-//            $userIds = Follow::where([
-//                'user_id' => $param['user_id'],
-//                'type' => 'user',
-//            ])->pluck('moment_id')->toArray();
-//
-//            if (!empty($userIds)) {
-//                $query = $query->with(['author' => function ($query) {
-//                    $query->select('id', 'username', 'nickname', 'avatar');
-//                }]);
-//                //        $query->withCount('comments');
-//
-//                $param['fields'] = [
-//                    'id','name','number','tags','type','create_time', 'img', 'update_time','user_id','good','bad'
-//                ];
-//                $query = $query->whereIn('user_id', $userIds)
-//                    ->whereIn('type',[1,3]);
-//                return self::ModelSearch($query, $param, $page, $size);
-//            }
-//        }
+        if (isset($param['user_id']) && !empty($param['user_id'])) {
+            $tagIds = Follow::where([
+                'user_id' => $param['user_id'],
+                'type' => 'tag',
+            ])->pluck('moment_id')->toArray();
+
+            if (!empty($tagIds)) {
+                $tags = Tag::whereIn('id', $tagIds)->pluck('name')->toArray();
+                if (!empty($tags)) {
+                    $query = $query->where(function ($query) use ($tags) {
+                        foreach ($tags as $tag) {
+                            $query->orWhere('name', 'like', "%{$tag}%");
+                            $query->orWhere('content', 'like', "%{$tag}%");
+                        }
+                    });
+                    $query = $query->with(['author' => function ($query) {
+                        $query->select('id', 'username', 'nickname', 'avatar');
+                    }]);
+
+                    $param['fields'] = [
+                        'id', 'name', 'number', 'tags', 'type', 'create_time', 'img', 'update_time', 'user_id', 'good', 'bad'
+                    ];
+                    $query = $query->whereIn('type', [1, 3]);
+                    return self::ModelSearch($query, $param, $page, $size);
+                }
+            }
+        }
 
         $query = $query->whereRaw('0=1');
         return self::ModelSearch($query, $param, $page, $size);

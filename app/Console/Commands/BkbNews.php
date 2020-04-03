@@ -19,14 +19,14 @@ class BkbNews extends Command
     protected $signature = 'bkb:pull';
 
     //生成环境
-    protected $bkbUrl = 'http://api-qa.beekuaibao.com/thirdparty/getOpenData/V2';
-    protected $bkbKey = 'bkb88888888';
-    protected $bkbChannel = 'swft';
+//    protected $bkbUrl = 'http://api-qa.beekuaibao.com/thirdparty/getOpenData/V2';
+//    protected $bkbKey = 'bkb88888888';
+//    protected $bkbChannel = 'swft';
 
     //生成环境
-//    protected $bkbUrl = 'https://api.beekuaibao.com/thirdparty/getOpenData/V2';
-//    protected $bkbKey = '07360FD5946F9F7620942E18EA9EFF48';
-//    protected $bkbChannel = 'cherry';
+    protected $bkbUrl = 'https://api.beekuaibao.com/thirdparty/getOpenData/V2';
+    protected $bkbKey = '07360FD5946F9F7620942E18EA9EFF48';
+    protected $bkbChannel = 'cherry';
 
     /**
      * The console command description.

@@ -110,15 +110,17 @@ class User extends Model
 
     public function getVerifyNameAttribute()
     {
+        //TODO 认证状态
         $verifyID = $this->verify_id;
-        if ($verifyID == 0) {
-            return '未认证';
-        }
+        $verifyID = ceil($verifyID);
+        $types = ['未认证', '已认证', '认证失败'];
+        return $types[$verifyID]?? '未认证';
     }
 
     public function getVerifyStatusAttribute()
     {
         //0未认证 1认证成功
+        //TODO 认证状态
         $verifyID = $this->verify_id;
         if ($verifyID == 0) {
             return 0;

@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 class CoinController extends BaseController
 {
 
+    //https://dncapi.bqiapp.com https://mdncapi.bqiapp.com
+    protected $apiUrl = 'https://mdncapi.bqiapp.com';
+
     /**
      * 市值榜
      * @param Request $request
@@ -17,7 +20,7 @@ class CoinController extends BaseController
     public function coinrank(Request $request)
     {
 
-        $url = 'https://dncapi.bqiapp.com/api/coin/web-coinrank';
+        $url = $this->apiUrl . '/api/coin/web-coinrank';
         $data = [
             "page" => $request->input('pageNum', 1),
             "pagesize" => $request->input('pageSize', 30),
@@ -40,7 +43,7 @@ class CoinController extends BaseController
      */
     public function maxchange(Request $request)
     {
-        $url = 'https://dncapi.bqiapp.com/api/v2/coin/maxchange';
+        $url = $this->apiUrl . '/api/v2/coin/maxchange';
         $data = [
             "isup" => $request->input('isup', 1),
             "per_page" => 30,
@@ -91,7 +94,7 @@ class CoinController extends BaseController
      */
     public function info(Request $request, $code)
     {
-        $url = 'https://dncapi.bqiapp.com/api/coin/web-coininfo';
+        $url = $this->apiUrl . '/api/coin/web-coininfo';
         $data = [
             "code" => $code,
             "webp" => 1,
@@ -116,7 +119,7 @@ class CoinController extends BaseController
      */
     public function markets(Request $request, $code)
     {
-        $url = 'https://dncapi.bqiapp.com/api/coin/market_ticker';
+        $url = $this->apiUrl . '/api/coin/market_ticker';
         $data = [
             "page" => $request->input('pageNum', 1),
             "pagesize" => $request->input('pageSize', 50),
@@ -161,7 +164,7 @@ class CoinController extends BaseController
      */
     public function kline(Request $request, $code)
     {
-        $url = 'https://dncapi.bqiapp.com/api/coin/web-charts';
+        $url = $this->apiUrl . '/api/coin/web-charts';
         $data = [
             //y 年 ydt 今年 3m 3月 w 周 d 24小时 all 全部
             "type" => $request->input('type', 'all'),
@@ -185,7 +188,7 @@ class CoinController extends BaseController
      */
     public function search(Request $request)
     {
-        $url = 'https://dncapi.bqiapp.com/api/search/websearch';
+        $url = $this->apiUrl . '/api/search/websearch';
         $data = [
             "page" => $request->input('pageNum', 1),
             "exchange_page" => $request->input('exchangePage', 1),
@@ -232,7 +235,7 @@ class CoinController extends BaseController
      */
     public function exchange_info(Request $request, $code)
     {
-        $url = 'https://dncapi.bqiapp.com/api/exchange/web-exchangeinfo';
+        $url = $this->apiUrl . '/api/exchange/web-exchangeinfo';
         $data = [
             "code" => $code,
             "webp" => 1,
@@ -256,7 +259,7 @@ class CoinController extends BaseController
      */
     public function exchange_news(Request $request, $code)
     {
-        $url = 'https://dncapi.bqiapp.com/api/v3/exchange/news';
+        $url = $this->apiUrl . '/api/v3/exchange/news';
         $data = [
             "page" => $request->input('pageNum', 1),
             "per_page" => $request->input('pageSize', 15),
@@ -281,7 +284,7 @@ class CoinController extends BaseController
      */
     public function exchange_markets(Request $request, $code)
     {
-        $url = 'https://dncapi.bqiapp.com/api/exchange/coinpair_list';
+        $url = $this->apiUrl . '/api/exchange/coinpair_list';
         $data = [
             "page" => $request->input('pageNum', 1),
             "pagesize" => $request->input('pageSize', 50),
